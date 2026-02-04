@@ -1,27 +1,98 @@
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Design system tokens - 2026_DESIGN + CORRECTIONS */
+    --cream: #fafaf9;
+    --text-primary: #0f0f0f;
+    --text-secondary: #525252;
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.18);
+    --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+
+    /* Sphere colors (cursorrules + CORRECTIONS) */
+    --foundational: #323b43;
+    --family: #ff3a30;
+    --economics: #ff9600;
+    --government: #ffcc01;
+    --religion: #88c807;
+    --education: #25b7d6;
+    --media: #595ad3;
+    --celebration: #df57ad;
+
+    /* Spacing */
+    --space-xs: 0.5rem;
+    --space-sm: 1rem;
+    --space-md: 1.5rem;
+    --space-lg: 2rem;
+    --space-xl: 4rem;
+
+    /* Border radius */
+    --radius-sm: 12px;
+    --radius-md: 18px;
+    --radius-lg: 24px;
+    --radius-xl: 28px;
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.16);
+
+    /* Transitions */
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  *,
+  *::before,
+  *::after {
+    @apply box-border;
+  }
+
+  html,
+  body {
+    @apply m-0 min-h-screen p-0 antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  body {
+    @apply bg-cream text-text-primary;
+    font-family: var(--font-bricolage), system-ui, sans-serif;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
+/* Completion checkmark animation on devotion cards */
+@keyframes devotion-complete-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-.main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 2rem;
+.devotion-complete-icon {
+  animation: devotion-complete-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-.main h1 {
-  margin: 0;
-  font-size: 2.5rem;
-  font-weight: 700;
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
