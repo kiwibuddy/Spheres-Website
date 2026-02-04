@@ -1,0 +1,578 @@
+---
+description: Sphere Devotions Platform - core tech stack, 416 rule, coding standards, and conventions
+alwaysApply: true
+---
+
+# Sphere Devotions Platform - Cursor AI Rules
+
+You are an expert Senior Full-Stack Developer specializing in modern React applications. We are building the **Sphere Devotions Platform** - a video-based educational platform with 416 devotional videos organized into 8 spheres.
+
+## Core Tech Stack
+
+### Frontend
+- **Framework:** Next.js 14+ (App Router)
+- **UI Library:** React 18+ (functional components with hooks only)
+- **Language:** TypeScript (strict mode)
+- **Styling:** Tailwind CSS 3+ with custom design tokens
+- **Components:** shadcn/ui (built on Radix UI)
+- **State Management:** React Context + Zustand
+- **Animations:** Framer Motion
+- **Forms:** React Hook Form + Zod validation
+- **Video Player:** React Player (YouTube wrapper)
+
+### Backend
+- **Platform:** Supabase (PostgreSQL + Auth + Storage + Edge Functions)
+- **Database:** PostgreSQL with JSON support
+- **Authentication:** Supabase Auth (email/password + OAuth)
+- **API:** RESTful + Supabase real-time subscriptions
+
+### Additional Services
+- **Hosting/CDN:** Vercel Edge Network
+- **Search:** Algolia or Typesense
+- **Email:** Resend or SendGrid
+- **Analytics:** Mixpanel + Google Analytics
+- **Monitoring:** Sentry
+- **Video Hosting:** YouTube
+
+## Critical Data Rules
+
+### The 416 Rule (NEVER VIOLATE)
+- **Total devotions:** ALWAYS 416 (never 476)
+- **Devotions per sphere:** ALWAYS 52 (never vary by sphere)
+- **Total spheres:** ALWAYS 8
+- **Structure:** 8 spheres × 52 devotions = 416 total
+- **Study pace:** 1 devotion per week per sphere
+
+### Progress Calculations
+```typescript
+// Overall progress
+const overallProgress = (completedCount / 416) * 100;
+
+// Per-sphere progress
+const sphereProgress = (completedInSphere / 52) * 100;
+
+// NEVER use any other denominator
+```
+
+### The 8 Spheres (Fixed Order)
+1. Foundational (#323b43 - dark navy)
+2. Family (#ff3a30 - red)
+3. Economics (#ff9600 - orange)
+4. Government (#ffcc01 - gold)
+5. Religion (#88c807 - green)
+6. Education (#25b7d6 - cyan)
+7. Media/Communication (#595ad3 - purple)
+8. Celebration (#df57ad - pink)
+
+## Coding Standards
+
+### TypeScript Rules
+- **ALWAYS use TypeScript** - no JavaScript files
+- **Strict mode enabled** - no implicit any
+- **Type everything explicitly** - interfaces for all data structures
+- **No type assertions unless absolutely necessary**
+- **Use discriminated unions for complex state**
+
+### React Component Rules
+- **ONLY functional components** - no class components
+- **Use modern hooks** - useState, useEffect, useMemo, useCallback, useContext
+- **Server Components first** - use Client Components only when needed
+- **Props interfaces** - define explicit interfaces for all component props
+- **Component file structure:**
+  ```typescript
+  // Imports
+  import { FC } from 'react';
+  
+  // Types/Interfaces
+  interface ComponentNameProps {
+    // ...
+  }
+  
+  // Component
+  export const ComponentName: FC<ComponentNameProps> = ({ prop1, prop2 }) => {
+    // Logic
+    return (/* JSX */);
+  };
+  ```
+
+### Naming Conventions
+- **Components:** PascalCase (e.g., `SphereCard`, `DevotionPlayer`)
+- **Files:** kebab-case for pages (e.g., `sphere-detail.tsx`)
+- **Hooks:** camelCase with 'use' prefix (e.g., `useProgress`, `useAuth`)
+- **Constants:** UPPER_SNAKE_CASE (e.g., `TOTAL_DEVOTIONS = 416`)
+- **Utilities:** camelCase (e.g., `calculateProgress`, `formatDate`)
+
+### File Structure
+```
+src/
+├── app/                    # Next.js App Router pages
+│   ├── (auth)/            # Auth group routes
+│   ├── dashboard/         # Dashboard pages
+│   ├── spheres/           # Sphere pages
+│   └── devotions/         # Devotion pages
+├── components/            # React components
+│   ├── ui/               # shadcn/ui components
+│   ├── features/         # Feature-specific components
+│   └── layout/           # Layout components
+├── lib/                   # Utilities and configs
+│   ├── supabase/         # Supabase client & utilities
+│   ├── hooks/            # Custom React hooks
+│   ├── utils/            # Helper functions
+│   └── constants.ts      # App constants (includes 416 rule)
+├── types/                 # TypeScript type definitions
+└── styles/               # Global styles
+```
+
+### Design System Rules
+
+#### Tailwind Configuration
+- **Mobile-first:** Always start with mobile styles, add breakpoints up
+- **Custom colors:** Use sphere colors from design system
+- **Spacing scale:** Use Tailwind's default (4px base unit)
+- **Typography:** Space Grotesk (headings) + Bricolage Grotesque (body)
+- **Dark mode:** Use class strategy, not media query
+
+#### UI Component Patterns
+- **Glassmorphism cards:**
+  ```tsx
+  className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl"
+  ```
+- **Smooth animations:**
+  ```tsx
+  className="transition-all duration-300 ease-out hover:scale-105"
+  ```
+- **Responsive grids:**
+  ```tsx
+  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+  ```
+
+### Database Schema Rules
+
+#### Core Tables (PostgreSQL via Supabase)
+```typescript
+// profiles
+interface Profile {
+  id: string;              // UUID, matches auth.users.id
+  email: string;
+  full_name: string;
+  avatar_url?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// spheres (static reference data)
+interface Sphere {
+  id: number;              // 1-8
+  slug: string;            // 'foundational', 'family', etc.
+  name: string;
+  description: string;
+  color_primary: string;   // hex color
+  icon_svg: string;        // SVG markup
+  total_devotions: 52;     // ALWAYS 52
+  order_index: number;     // 1-8
+}
+
+// devotions (static content data)
+interface Devotion {
+  id: number;              // Unique ID
+  sphere_id: number;       // FK to spheres
+  code: string;            // e.g., "FOU001"
+  title: string;
+  scripture_reference: string;
+  youtube_url: string;
+  duration_seconds: number;
+  transcript?: string;
+  order_in_sphere: number; // 1-52
+}
+
+// user_progress
+interface UserProgress {
+  id: string;              // UUID
+  user_id: string;         // FK to profiles
+  devotion_id: number;     // FK to devotions
+  completed: boolean;
+  watch_percentage: number; // 0-100
+  completed_at?: string;
+  last_watched_at: string;
+}
+
+// NEVER create devotions with counts other than 52 per sphere
+```
+
+#### Query Patterns
+```typescript
+// Get user's overall progress
+const getOverallProgress = async (userId: string) => {
+  const { count } = await supabase
+    .from('user_progress')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .eq('completed', true);
+  
+  return (count || 0) / 416 * 100; // ALWAYS divide by 416
+};
+
+// Get sphere progress
+const getSphereProgress = async (userId: string, sphereId: number) => {
+  const { data: devotions } = await supabase
+    .from('devotions')
+    .select('id')
+    .eq('sphere_id', sphereId);
+  
+  const { count } = await supabase
+    .from('user_progress')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .eq('completed', true)
+    .in('devotion_id', devotions?.map(d => d.id) || []);
+  
+  return (count || 0) / 52 * 100; // ALWAYS divide by 52
+};
+```
+
+## Before Writing Code
+
+### Planning Process (REQUIRED)
+1. **Explain your approach** in 2-3 sentences
+2. **Identify dependencies** - what needs to exist first?
+3. **Consider edge cases** - what could go wrong?
+4. **Verify 416 rule** - if dealing with devotions/progress, confirm calculations
+
+### Example:
+```
+USER: "Create a component to show sphere completion percentage"
+
+YOU: "I'll create a SphereProgress component that queries user_progress 
+for completed devotions in a specific sphere, then calculates percentage 
+by dividing by 52 (since each sphere has exactly 52 devotions). I'll use 
+Supabase client hooks for real-time updates and display with a Radix UI 
+Progress component styled with Tailwind."
+```
+
+## Authentication Patterns
+
+### Supabase Auth Integration
+```typescript
+// lib/supabase/client.ts
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+
+export const supabase = createClientComponentClient();
+
+// Check auth state
+const { data: { session } } = await supabase.auth.getSession();
+
+// Sign in
+await supabase.auth.signInWithPassword({ email, password });
+
+// Sign up
+await supabase.auth.signUp({ email, password });
+
+// Sign out
+await supabase.auth.signOut();
+```
+
+### Protected Route Pattern
+```typescript
+// app/dashboard/page.tsx
+import { redirect } from 'next/navigation';
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
+
+export default async function DashboardPage() {
+  const supabase = createServerComponentClient({ cookies });
+  const { data: { session } } = await supabase.auth.getSession();
+  
+  if (!session) {
+    redirect('/login');
+  }
+  
+  // Render protected content
+}
+```
+
+## Video Player Requirements
+
+### YouTube Integration
+```typescript
+import ReactPlayer from 'react-player/youtube';
+
+interface DevotionPlayerProps {
+  youtubeUrl: string;
+  devotionId: number;
+  onProgress: (percentage: number) => void;
+}
+
+const DevotionPlayer: FC<DevotionPlayerProps> = ({ 
+  youtubeUrl, 
+  devotionId, 
+  onProgress 
+}) => {
+  const handleProgress = (state: { played: number }) => {
+    const percentage = Math.floor(state.played * 100);
+    onProgress(percentage);
+    
+    // Auto-save progress every 10 seconds
+    // ... save to database
+  };
+  
+  return (
+    <ReactPlayer
+      url={youtubeUrl}
+      controls
+      width="100%"
+      height="100%"
+      onProgress={handleProgress}
+      progressInterval={10000} // 10 seconds
+    />
+  );
+};
+```
+
+## Performance Requirements
+
+### Page Load Performance
+- **First Contentful Paint:** < 1.5s
+- **Time to Interactive:** < 3.5s
+- **Use Next.js Image component** for all images
+- **Lazy load components** below the fold
+- **Prefetch critical navigation** paths
+
+### Data Fetching Patterns
+```typescript
+// Server Component (preferred for initial data)
+const SphereListPage = async () => {
+  const supabase = createServerComponentClient({ cookies });
+  const { data: spheres } = await supabase
+    .from('spheres')
+    .select('*')
+    .order('order_index');
+  
+  return <SphereList spheres={spheres} />;
+};
+
+// Client Component (for interactive/real-time data)
+'use client';
+
+const UserProgress = () => {
+  const [progress, setProgress] = useState<number>(0);
+  
+  useEffect(() => {
+    const loadProgress = async () => {
+      const percent = await getOverallProgress(userId);
+      setProgress(percent);
+    };
+    loadProgress();
+  }, [userId]);
+  
+  return <ProgressBar value={progress} max={100} />;
+};
+```
+
+## Common Pitfalls to Avoid
+
+### ❌ NEVER DO THIS:
+```typescript
+// Wrong: Using 476 instead of 416
+const progress = completedCount / 476 * 100;
+
+// Wrong: Assuming spheres have different counts
+const sphereMax = sphere.name === 'Family' ? 59 : 52;
+
+// Wrong: Class components
+class DevotionCard extends React.Component { }
+
+// Wrong: Inline styles
+<div style={{ backgroundColor: 'red' }}>
+
+// Wrong: Non-typed props
+const MyComponent = (props) => { }
+
+// Wrong: Direct Supabase mutations from client
+await supabase.from('profiles').update({ admin: true });
+```
+
+### ✅ ALWAYS DO THIS:
+```typescript
+// Correct: Using 416
+const TOTAL_DEVOTIONS = 416;
+const progress = completedCount / TOTAL_DEVOTIONS * 100;
+
+// Correct: All spheres have 52
+const DEVOTIONS_PER_SPHERE = 52;
+const sphereProgress = completedInSphere / DEVOTIONS_PER_SPHERE * 100;
+
+// Correct: Functional components
+const DevotionCard: FC<DevotionCardProps> = ({ devotion }) => { };
+
+// Correct: Tailwind classes
+<div className="bg-red-500 rounded-lg p-4">
+
+// Correct: Typed props
+interface MyComponentProps {
+  title: string;
+  count: number;
+}
+const MyComponent: FC<MyComponentProps> = ({ title, count }) => { };
+
+// Correct: API routes for sensitive operations
+// app/api/admin/route.ts
+export async function POST(request: Request) {
+  // Check admin privileges server-side
+}
+```
+
+## Error Handling
+
+### API Error Pattern
+```typescript
+try {
+  const { data, error } = await supabase
+    .from('user_progress')
+    .insert({ user_id, devotion_id, completed: true });
+  
+  if (error) throw error;
+  
+  return { success: true, data };
+} catch (error) {
+  console.error('Failed to save progress:', error);
+  return { 
+    success: false, 
+    error: error instanceof Error ? error.message : 'Unknown error' 
+  };
+}
+```
+
+### User-Facing Error Messages
+```typescript
+// Use toast notifications from shadcn/ui
+import { useToast } from '@/components/ui/use-toast';
+
+const { toast } = useToast();
+
+toast({
+  variant: "destructive",
+  title: "Failed to save progress",
+  description: "Please try again or contact support if the issue persists.",
+});
+```
+
+## Testing Considerations
+
+### Manual Testing Checklist
+Before considering any feature complete:
+- [ ] Test with empty state (new user, no progress)
+- [ ] Test with partial progress (some spheres completed)
+- [ ] Test with full completion (all 416 devotions)
+- [ ] Test on mobile viewport (320px width)
+- [ ] Test on tablet viewport (768px width)
+- [ ] Test on desktop viewport (1920px width)
+- [ ] Test with slow network (Chrome DevTools throttling)
+- [ ] Verify 416 total / 52 per sphere calculations
+
+## Accessibility Requirements
+
+### ARIA and Semantic HTML
+```tsx
+// Use semantic HTML
+<main>
+  <nav aria-label="Primary navigation">
+    <button aria-label="Open menu" aria-expanded={isOpen}>
+  </nav>
+  <article>
+    <h1>Sphere: Family</h1>
+    <section aria-labelledby="devotions-heading">
+      <h2 id="devotions-heading">Devotions</h2>
+    </section>
+  </article>
+</main>
+
+// Keyboard navigation
+<button 
+  onClick={handleClick}
+  onKeyDown={(e) => e.key === 'Enter' && handleClick()}
+>
+```
+
+### Focus Management
+```typescript
+// Trap focus in modals
+import { Dialog } from '@/components/ui/dialog';
+
+// Restore focus after modal closes
+const triggerRef = useRef<HTMLButtonElement>(null);
+```
+
+## Security Rules
+
+### Row Level Security (RLS) Policies
+```sql
+-- Users can only read their own profile
+CREATE POLICY "Users can view own profile"
+  ON profiles FOR SELECT
+  USING (auth.uid() = id);
+
+-- Users can only update their own progress
+CREATE POLICY "Users can update own progress"
+  ON user_progress FOR UPDATE
+  USING (auth.uid() = user_id);
+
+-- Devotion content is public (read-only)
+CREATE POLICY "Anyone can read devotions"
+  ON devotions FOR SELECT
+  TO public
+  USING (true);
+```
+
+### Environment Variables
+```typescript
+// Never commit API keys - use .env.local
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key // server-only
+
+NEXT_PUBLIC_YOUTUBE_API_KEY=your_youtube_key
+MIXPANEL_TOKEN=your_mixpanel_token
+ALGOLIA_APP_ID=your_algolia_id
+```
+
+## Code Review Checklist
+
+Before submitting any code:
+- [ ] TypeScript compiles with no errors (`npm run type-check`)
+- [ ] No console.log statements (use proper logging)
+- [ ] 416 rule verified if dealing with devotions/progress
+- [ ] All props have TypeScript interfaces
+- [ ] Components are responsive (mobile, tablet, desktop)
+- [ ] Animations are smooth (60fps)
+- [ ] No hardcoded strings (use constants or i18n)
+- [ ] Error states handled gracefully
+- [ ] Loading states shown for async operations
+- [ ] Accessibility: semantic HTML, ARIA labels, keyboard nav
+
+## Additional Resources
+
+### Key Files Reference
+- `/lib/constants.ts` - Contains `TOTAL_DEVOTIONS = 416` and sphere data
+- `/types/database.ts` - Supabase generated types
+- `/lib/supabase/client.ts` - Supabase client configuration
+- `/components/ui/*` - shadcn/ui component library
+- `tailwind.config.ts` - Design system tokens
+
+### Documentation Links
+- Next.js App Router: https://nextjs.org/docs/app
+- Supabase Auth: https://supabase.com/docs/guides/auth
+- shadcn/ui: https://ui.shadcn.com/
+- Tailwind CSS: https://tailwindcss.com/docs
+
+## Final Reminder
+
+**The most critical rule: 416 devotions total, 52 per sphere, always.**
+
+When in doubt:
+1. Explain your plan first
+2. Verify the 416 rule if applicable
+3. Use TypeScript strictly
+4. Write clean, typed, functional React components
+5. Test on mobile first
+
+Now build something beautiful! 🚀

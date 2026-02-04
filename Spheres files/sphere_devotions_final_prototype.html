@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sphere Devotions - Transform Your Worldview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,200;12..96,400;12..96,500;12..96,600;12..96,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --cream: #FAFAF9;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            --text-primary: #0F0F0F;
+            --text-secondary: #525252;
+            
+            /* Sphere Colors from SVGs */
+            --foundational: #323b43;
+            --family: #ff3a30;
+            --economics: #ff9600;
+            --government: #ffcc01;
+            --religion: #88c807;
+            --education: #25b7d6;
+            --media: #595ad3;
+            --celebration: #df57ad;
+        }
+        
+        body {
+            font-family: 'Bricolage Grotesque', sans-serif;
+            background: var(--cream);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            font-size: 16px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Liquid Glass Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            background: rgba(250, 250, 249, 0.72);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        }
+        
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, var(--education), var(--family));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--family);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+        
+        .cta-btn {
+            padding: 0.65rem 1.5rem;
+            background: var(--text-primary);
+            color: var(--cream);
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(15, 15, 15, 0.15);
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 8rem 2rem 4rem;
+        }
+        
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(37, 183, 214, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 58, 48, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(136, 200, 7, 0.08) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.05); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            text-align: center;
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.2rem;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            animation: slideDown 0.8s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(3rem, 8vw, 6.5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+        
+        .hero h1 .gradient-text {
+            background: linear-gradient(135deg, var(--education), var(--family), var(--religion));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+            animation: shimmer 3s ease-in-out infinite;
+            background-size: 200% 200%;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .hero p {
+            font-size: clamp(1.1rem, 2vw, 1.4rem);
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+        
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+        
+        .btn-primary {
+            padding: 1.1rem 2.5rem;
+            background: var(--text-primary);
+            color: var(--cream);
+            border: none;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn-primary:hover:before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(15, 15, 15, 0.2);
+        }
+        
+        .btn-secondary {
+            padding: 1.1rem 2.5rem;
+            background: transparent;
+            color: var(--text-primary);
+            border: 2px solid var(--text-primary);
+            border-radius: 14px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: var(--text-primary);
+            color: var(--cream);
+            transform: translateY(-3px);
+        }
+        
+        /* Stats Bento Grid */
+        .stats-section {
+            max-width: 1400px;
+            margin: -3rem auto 6rem;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 3;
+        }
+        
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            animation: fadeInUp 0.8s ease-out 0.8s both;
+        }
+        
+        .bento-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: var(--shadow-glass);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .bento-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, var(--education), var(--media));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+        
+        .bento-card:hover:before {
+            transform: scaleX(1);
+        }
+        
+        .bento-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(31, 38, 135, 0.2);
+        }
+        
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--education), var(--media));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1.2rem;
+        }
+        
+        .bento-card:nth-child(2) .stat-icon {
+            background: linear-gradient(135deg, var(--family), var(--celebration));
+        }
+        
+        .bento-card:nth-child(3) .stat-icon {
+            background: linear-gradient(135deg, var(--government), var(--economics));
+        }
+        
+        .bento-card:nth-child(4) .stat-icon {
+            background: linear-gradient(135deg, var(--religion), var(--foundational));
+        }
+        
+        .stat-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--text-primary), var(--education));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        /* Spheres Section */
+        .spheres-section {
+            max-width: 1400px;
+            margin: 0 auto 6rem;
+            padding: 0 2rem;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .section-header h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+        
+        .section-header p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .spheres-bento {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+            grid-auto-rows: 280px;
+        }
+        
+        .sphere-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-glass);
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .sphere-card:before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 0;
+        }
+        
+        .sphere-card:nth-child(1):before { background: var(--foundational); }
+        .sphere-card:nth-child(2):before { background: var(--family); }
+        .sphere-card:nth-child(3):before { background: var(--economics); }
+        .sphere-card:nth-child(4):before { background: var(--government); }
+        .sphere-card:nth-child(5):before { background: var(--religion); }
+        .sphere-card:nth-child(6):before { background: var(--education); }
+        .sphere-card:nth-child(7):before { background: var(--media); }
+        .sphere-card:nth-child(8):before { background: var(--celebration); }
+        
+        .sphere-card:hover:before {
+            opacity: 0.05;
+        }
+        
+        .sphere-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(31, 38, 135, 0.25);
+        }
+        
+        .sphere-card > * {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Bento grid placements */
+        .sphere-card:nth-child(1) { grid-column: span 6; grid-row: span 1; }
+        .sphere-card:nth-child(2) { grid-column: span 6; grid-row: span 1; }
+        .sphere-card:nth-child(3) { grid-column: span 4; grid-row: span 2; }
+        .sphere-card:nth-child(4) { grid-column: span 4; grid-row: span 1; }
+        .sphere-card:nth-child(5) { grid-column: span 4; grid-row: span 1; }
+        .sphere-card:nth-child(6) { grid-column: span 6; grid-row: span 1; }
+        .sphere-card:nth-child(7) { grid-column: span 3; grid-row: span 1; }
+        .sphere-card:nth-child(8) { grid-column: span 3; grid-row: span 1; }
+        
+        .sphere-icon-wrapper {
+            width: 72px;
+            height: 72px;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
+            transition: transform 0.3s ease;
+        }
+        
+        .sphere-card:hover .sphere-icon-wrapper {
+            transform: scale(1.1);
+        }
+        
+        .sphere-icon-wrapper svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .sphere-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.01em;
+        }
+        
+        .sphere-count {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Progress bars */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.08);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 0.8rem;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1.2s cubic-bezier(0.65, 0, 0.35, 1);
+            position: relative;
+        }
+        
+        .sphere-card:nth-child(1) .progress-bar { background: var(--foundational); }
+        .sphere-card:nth-child(2) .progress-bar { background: var(--family); }
+        .sphere-card:nth-child(3) .progress-bar { background: var(--economics); }
+        .sphere-card:nth-child(4) .progress-bar { background: var(--government); }
+        .sphere-card:nth-child(5) .progress-bar { background: var(--religion); }
+        .sphere-card:nth-child(6) .progress-bar { background: var(--education); }
+        .sphere-card:nth-child(7) .progress-bar { background: var(--media); }
+        .sphere-card:nth-child(8) .progress-bar { background: var(--celebration); }
+        
+        .progress-bar:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.4), 
+                transparent
+            );
+            animation: shimmerBar 2s infinite;
+        }
+        
+        @keyframes shimmerBar {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .progress-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        /* Achievements */
+        .achievements-preview {
+            max-width: 1400px;
+            margin: 0 auto 6rem;
+            padding: 0 2rem;
+            text-align: center;
+        }
+        
+        .badges-container {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+        }
+        
+        .badge {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: var(--shadow-glass);
+        }
+        
+        .badge:hover {
+            transform: translateY(-12px) rotate(5deg) scale(1.1);
+            box-shadow: 0 20px 40px rgba(31, 38, 135, 0.3);
+        }
+        
+        .badge:nth-child(even):hover {
+            transform: translateY(-12px) rotate(-5deg) scale(1.1);
+        }
+        
+        .badge.locked {
+            opacity: 0.3;
+            filter: grayscale(100%);
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .spheres-bento {
+                grid-template-columns: repeat(6, 1fr);
+            }
+            
+            .sphere-card:nth-child(1),
+            .sphere-card:nth-child(2) { grid-column: span 6; }
+            .sphere-card:nth-child(3) { grid-column: span 6; grid-row: span 1; }
+            .sphere-card:nth-child(4),
+            .sphere-card:nth-child(5) { grid-column: span 3; }
+            .sphere-card:nth-child(6) { grid-column: span 6; }
+            .sphere-card:nth-child(7),
+            .sphere-card:nth-child(8) { grid-column: span 3; }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .spheres-bento {
+                grid-template-columns: 1fr;
+                grid-auto-rows: auto;
+            }
+            
+            .sphere-card {
+                grid-column: span 1 !important;
+                grid-row: span 1 !important;
+            }
+            
+            .hero-cta {
+                flex-direction: column;
+            }
+            
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+            }
+        }
+        
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: scrollBounce 2s ease-in-out infinite;
+        }
+        
+        @keyframes scrollBounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+        
+        .scroll-indicator svg {
+            width: 24px;
+            height: 24px;
+            opacity: 0.4;
+        }
+    </style>
+</head>
+<body>
+    <!-- Liquid Glass Navigation -->
+    <nav class="nav">
+        <div class="nav-content">
+            <div class="logo">Sphere Devotions</div>
+            <div class="nav-links">
+                <a href="#spheres">Explore</a>
+                <a href="#progress">Progress</a>
+                <a href="#community">Community</a>
+                <button class="cta-btn">Get Started</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span>✨</span>
+                <span>416 Biblical Devotions</span>
+            </div>
+            <h1>
+                Transform Your<br>
+                <span class="gradient-text">Worldview</span>
+            </h1>
+            <p>
+                Discover a comprehensive year-long journey through 8 spheres of biblical wisdom. 
+                52 devotions per sphere. Track progress, earn achievements, and grow in understanding.
+            </p>
+            <div class="hero-cta">
+                <button class="btn-primary">Begin Journey</button>
+                <button class="btn-secondary">Explore Spheres</button>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M19 12l-7 7-7-7"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Stats Bento Grid -->
+    <section class="stats-section">
+        <div class="bento-grid">
+            <div class="bento-card">
+                <div class="stat-icon">📚</div>
+                <div class="stat-number">45</div>
+                <div class="stat-label">Devotions Completed</div>
+            </div>
+            <div class="bento-card">
+                <div class="stat-icon">🔥</div>
+                <div class="stat-number">7</div>
+                <div class="stat-label">Day Streak</div>
+            </div>
+            <div class="bento-card">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-number">3</div>
+                <div class="stat-label">Badges Earned</div>
+            </div>
+            <div class="bento-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-number">11%</div>
+                <div class="stat-label">Overall Progress</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Spheres Bento Grid -->
+    <section class="spheres-section" id="spheres">
+        <div class="section-header">
+            <h2>Explore the 8 Spheres</h2>
+            <p>Each sphere contains 52 weekly devotions exploring a fundamental domain of life through biblical wisdom</p>
+        </div>
+        
+        <div class="spheres-bento">
+            <!-- Foundational -->
+            <div class="sphere-card">
+                <div>
+                    <div class="sphere-icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 231 231">
+                            <circle cx="115.5" cy="115.5" r="105.5" fill="#323b43" opacity="0.1"/>
+                            <circle cx="115.5" cy="115.5" r="90" fill="none" stroke="#323b43" stroke-width="3"/>
+                            <path d="M115.5 45L165 85L155 135L75 135L65 85Z" fill="#323b43"/>
+                        </svg>
+                    </div>
+                    <div class="sphere-name">Foundational</div>
+                    <div class="sphere-count">52 devotions · 1 per week</div>
+                </div>
+                <div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 12%"></div>
+                    </div>
+                    <div class="progress-text">6 of 52 completed</div>
+                </div>
+            </div>
+            
+            <!-- Family -->
+            <div class="sphere-card">
+                <div>
+                    <div class="sphere-icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 231 231">
+                            <circle cx="115.5" cy="115.5" r="105.5" fill="#ff3a30" opacity="0.1"/>
+                            <path d="M115.5 60 C90 60, 75 85, 75 100 C75 115, 90 135, 115.5 160 C141 135, 156 115, 156 100 C156 85, 141 60, 115.5 60Z" fill="#ff3a30"/>
+                        </svg>
+                    </div>
+                    <div class="sphere-name">Family</div>
+                    <div class="sphere-count">52 devotions · 1 per week</div>
+                </div>
+                <div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 45%"></div>
+                    </div>
+                    <div class="progress-text">23 of 52 completed</div>
+                </div>
+            </div>
+            
+            <!-- Economics -->
+            <div class="sphere-card">
+                <div>
+                    <div class="sphere-icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 231 231">
+                            <circle cx="115.5" cy="115.5" r="105.5" fill="#ff9600" opacity="0.1"/>
+                            <path d="M60 130L90 110L110 120L140 95L170 105L170 155L60 155Z" fill="#ff9600"/>
+                            <circle cx="90" cy="110" r="4" fill="#ff9600"/>
+                            <circle cx="110" cy="120" r="4" fill="#ff9600"/>
+                            <circle cx="140" cy="95" r="4" fill="#ff9600"/>
+                            <circle cx="170" cy="105" r="4" fill="#ff9600"/>
+                        </svg>
+                    </div>
+                    <div class="sphere-name">Economics</div>
+                    <div class="sphere-count">52 devotions · 1 per week</div>
+                </div>
+                <div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text">0 of 52 completed</div>
+                </div>
+            </div>
+            
+            <!-- Government -->
+            <div class="sphere-card">
+                <div>
+                    <div class="sphere-icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 231 231">
+                            <circle cx="115.5" cy="115.5" r="105.5" fill="#ffcc01" opacity="0.1"/>
+                            <rect x="100" y="80" width="8" height="35" fill="#ffcc01"/>
+                            <rect x="123" y="80" width="8" height="35" fill="#ffcc01"/>
+                            <path d="M85 115L146 115L140 145L91 145Z" fill="#ffcc01"/>
+                            <rect x="85" y="145" width="61" height="6" fill="#ffcc01"/>
+                        </svg>
+                    </div>
+                    <div class="sphere-name">Government</div>
+                    <div class="sphere-count">52 devotions · 1 per week</div>
+                </div>
+                <div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 8%"></div>
+                    </div>
+                    <div class="progress-text">4 of 52 completed</div>
+                </div>
+            </div>
+            
+            <!-- Religion -->
+            <div class="sphere-card">
+                <div>
+                    <div class="sphere-icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 231 231">
+                            <circle cx="115.5" cy="115.5" r="105.5" fill="#88c807" opacity="0.1"/>
+                            <rect x="108" y="60" width="15" height="65" fill="#88c807"/>
+                            <rect x="75" y="105" width="81" height="15" fill="#88c807"/>
+                        </svg>
+                    </div>
+                    <div class="sphere-name">Religion</div>
+                    <div class="sphere-count">52 devotions · 1 per week</div>
+                </div>
+                <div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 25%"></div>
+                    </div>
+                    <div class="progress-text">13 of 52 completed</div>
+                </div>
+            </div>
+            
+            <!-- Education -->
+            <div class="sphere-card">
+                <div>
+                    <div class="sphere-icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 231 231">
+                            <circle cx="115.5" cy="115.5" r="105.5" fill="#25b7d6" opacity="0.1"/>
+                            <path d="M70 100L115.5 75L161 100L161 130L115.5 155L70 130Z" fill="none" stroke="#25b7d6" stroke-width="8"/>
+                            <path d="M115.5 75L115.5 125" stroke="#25b7d6" stroke-width="3"/>
+                        </svg>
+                    </div>
+                    <div class="sphere-name">Education</div>
+                    <div class="sphere-count">52 devotions · 1 per week</div>
+                </div>
+                <div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 60%"></div>
+                    </div>
+                    <div class="progress-text">31 of 52 completed</div>
+                </div>
+            </div>
+            
+            <!-- Media -->
+            <div class="sphere-card">
+                <div>
+                    <div class="sphere-icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 231 231">
+                            <circle cx="115.5" cy="115.5" r="105.5" fill="#595ad3" opacity="0.1"/>
+                            <circle cx="115.5" cy="115.5" r="50" fill="none" stroke="#595ad3" stroke-width="8"/>
+                            <path d="M95 115.5L135 95L135 136Z" fill="#595ad3"/>
+                        </svg>
+                    </div>
+                    <div class="sphere-name">Media</div>
+                    <div class="sphere-count">52 devotions · 1 per week</div>
+                </div>
+                <div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 15%"></div>
+                    </div>
+                    <div class="progress-text">8 of 52 completed</div>
+                </div>
+            </div>
+            
+            <!-- Celebration -->
+            <div class="sphere-card">
+                <div>
+                    <div class="sphere-icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 231 231">
+                            <circle cx="115.5" cy="115.5" r="105.5" fill="#df57ad" opacity="0.1"/>
+                            <circle cx="115.5" cy="90" r="25" fill="none" stroke="#df57ad" stroke-width="8"/>
+                            <path d="M90 115Q90 130, 115.5 150Q141 130, 141 115" fill="none" stroke="#df57ad" stroke-width="8"/>
+                        </svg>
+                    </div>
+                    <div class="sphere-name">Celebration</div>
+                    <div class="sphere-count">52 devotions · 1 per week</div>
+                </div>
+                <div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text">0 of 52 completed</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Achievements Preview -->
+    <section class="achievements-preview">
+        <div class="section-header">
+            <h2>Your Achievements</h2>
+            <p>Earn badges as you progress through your 52-week spiritual journey in each sphere</p>
+        </div>
+        
+        <div class="badges-container">
+            <div class="badge">🌱</div>
+            <div class="badge">🔥</div>
+            <div class="badge">👨‍👩‍👧</div>
+            <div class="badge locked">⭐</div>
+            <div class="badge locked">🏆</div>
+            <div class="badge locked">💎</div>
+        </div>
+    </section>
+
+    <script>
+        // Animate progress bars on scroll
+        const observerOptions = {
+            threshold: 0.3,
+            rootMargin: '0px 0px -100px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const progressBars = entry.target.querySelectorAll('.progress-bar');
+                    progressBars.forEach(bar => {
+                        const width = bar.style.width;
+                        bar.style.width = '0%';
+                        setTimeout(() => {
+                            bar.style.width = width;
+                        }, 100);
+                    });
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.spheres-bento, .bento-grid').forEach(section => {
+            observer.observe(section);
+        });
+        
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
