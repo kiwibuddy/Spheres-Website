@@ -108,7 +108,7 @@ function getActiveDates(rows: { completed_at?: string | null; responses_complete
     if (row.completed_at) dates.add(row.completed_at.slice(0, 10))
     if (row.responses_completed_at) dates.add(row.responses_completed_at.slice(0, 10))
   }
-  return [...dates].sort().reverse()
+  return Array.from(dates).sort().reverse()
 }
 
 /** Current streak: consecutive days with at least one completion, ending today (or yesterday). */

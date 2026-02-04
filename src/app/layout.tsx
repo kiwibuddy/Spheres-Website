@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import { Space_Grotesk, Bricolage_Grotesque } from 'next/font/google'
 import '@/styles/globals.css'
-import { Navigation } from '@/components/layout/Navigation'
 import { Footer } from '@/components/layout/Footer'
+import { NavigationStatic } from '@/components/layout/NavigationStatic'
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -29,13 +29,26 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${bricolageGrotesque.variable}`}>
       <body className="font-sans">
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.__SPHERES_ERROR_LOG = [];
+              window.addEventListener('error', function(e) {
+                var msg = '[EarlyError] ' + (e.message || '') + ' | file:' + (e.filename || '') + ':' + (e.lineno || '') + ':' + (e.colno || '');
+                window.__SPHERES_ERROR_LOG.push(msg);
+                console.error(msg, e.error);
+                fetch('/api/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prefix: '[EarlyError]', lines: [msg, (e.error && e.error.stack) || ''] }) }).catch(function(){});
+              });
+            `,
+          }}
+        />
         <a
           href="#main-content"
           className="absolute left-[-9999px] w-px h-px overflow-hidden focus:left-4 focus:top-4 focus:z-[1001] focus:w-auto focus:h-auto focus:px-4 focus:py-2 focus:rounded focus:bg-text-primary focus:text-cream focus:overflow-visible"
         >
           Skip to main content
         </a>
-        <Navigation />
+        <NavigationStatic />
         <main id="main-content" className="min-h-screen" role="main">
           {children}
         </main>

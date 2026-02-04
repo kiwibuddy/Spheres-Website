@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { DevotionPlayer } from './DevotionPlayer'
 
 const PROGRESS_INTERVAL_MS = 10000
+const LOG_PREFIX = '[DevotionPlayerWithProgress]'
 
 export interface DevotionPlayerWithProgressProps {
   youtubeUrl: string
@@ -12,6 +13,11 @@ export interface DevotionPlayerWithProgressProps {
 }
 
 export function DevotionPlayerWithProgress({ youtubeUrl, devotionId }: DevotionPlayerWithProgressProps) {
+  const mounted = useRef(false)
+  if (!mounted.current) {
+    console.log(LOG_PREFIX, 'mount', { devotionId, hasYoutubeUrl: !!youtubeUrl })
+    mounted.current = true
+  }
   const lastSaved = useRef(0)
   const lastPercentage = useRef(0)
   const hasShownCompletion = useRef(false)

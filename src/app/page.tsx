@@ -1,8 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { getCompletedCount, getResponsesCompletedCount, getSphereProgress, getStreak } from '@/lib/supabase/progress'
-import { SPHERES, ACHIEVEMENT_BADGES, FULL_COMPLETION_BADGES, TOTAL_DEVOTIONS, DEVOTIONS_PER_SPHERE } from '@/lib/constants'
-import { SphereCardWithModal } from '@/components/features/SphereCardWithModal'
+import { SPHERES, ACHIEVEMENT_BADGES, FULL_COMPLETION_BADGES, TOTAL_DEVOTIONS, DEVOTIONS_PER_SPHERE, SPHERE_INTROS } from '@/lib/constants'
 
 async function getHomeProgress() {
   try {
@@ -56,6 +55,17 @@ async function getHomeProgress() {
     }
   }
 }
+
+const GRID_CLASSES = [
+  'lg:col-span-6',
+  'lg:col-span-6',
+  'lg:col-span-4 lg:row-span-2',
+  'lg:col-span-4',
+  'lg:col-span-4',
+  'lg:col-span-6',
+  'lg:col-span-3',
+  'lg:col-span-3',
+]
 
 export default async function HomePage() {
   const { completedCount, responsesCompletedCount, streak, sphereCompleted, badgesEarned, fullBadgesEarned } =
@@ -144,24 +154,43 @@ export default async function HomePage() {
           {SPHERES.map((sphere, i) => {
             const completed = sphereCompleted[i] ?? 0
             const progressPct = Math.round((completed / DEVOTIONS_PER_SPHERE) * 100)
-            const gridClass =
-              i === 0 || i === 1
-                ? 'lg:col-span-6'
-                : i === 2
-                  ? 'lg:col-span-4 lg:row-span-2'
-                  : i === 3 || i === 4
-                    ? 'lg:col-span-4'
-                    : i === 5
-                      ? 'lg:col-span-6'
-                      : 'lg:col-span-3'
+            const intro = SPHERE_INTROS[sphere.slug]
+            const short = intro?.short ?? sphere.description
             return (
-              <SphereCardWithModal
+              <Link
                 key={sphere.slug}
-                sphere={sphere}
-                completed={completed}
-                progressPct={progressPct}
-                gridClass={gridClass}
-              />
+                href={`/spheres/${sphere.slug}`}
+                className={`group flex flex-col justify-between rounded-[28px] border border-white/20 bg-white/70 p-8 text-left shadow-glass transition-all duration-300 hover:-translate-y-3 hover:scale-[1.02] hover:shadow-[0_30px_60px_rgba(31,38,135,0.25)] ${GRID_CLASSES[i] ?? 'lg:col-span-3'}`}
+              >
+                <div>
+                  <div
+                    className="mb-4 flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-2xl"
+                    style={{ backgroundColor: `${sphere.color_primary}15` }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`/sphere-icons/${sphere.icon}`}
+                      alt=""
+                      width={72}
+                      height={72}
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
+                  <h3 className="font-heading text-2xl font-bold text-text-primary">{sphere.name}</h3>
+                  <p className="mt-2 line-clamp-2 text-sm text-text-secondary">{short}</p>
+                </div>
+                <div>
+                  <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-black/10">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{ width: `${progressPct}%`, backgroundColor: sphere.color_primary }}
+                    />
+                  </div>
+                  <p className="text-sm font-semibold text-text-primary">
+                    {completed} of 52 completed
+                  </p>
+                </div>
+              </Link>
             )
           })}
         </div>

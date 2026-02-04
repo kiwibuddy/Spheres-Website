@@ -32,6 +32,10 @@ export default function SignupPage() {
     setError(null)
     try {
       const supabase = createClient()
+      if (!supabase) {
+        setError('Sign-up is not configured. Please add Supabase env vars.')
+        return
+      }
       const { error: signUpError } = await supabase.auth.signUp({ email: data.email, password: data.password })
       if (signUpError) {
         setError(signUpError.message)

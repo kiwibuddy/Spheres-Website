@@ -1,8 +1,9 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 const MAX_WORDS = 500
+const LOG_PREFIX = '[ReflectionResponses]'
 
 function wordCount(text: string): number {
   return text.trim() ? text.trim().split(/\s+/).length : 0
@@ -14,6 +15,11 @@ export interface ReflectionResponsesProps {
 }
 
 export function ReflectionResponses({ devotionId, questions }: ReflectionResponsesProps) {
+  const loggedMount = useRef(false)
+  if (!loggedMount.current) {
+    console.log(LOG_PREFIX, 'mount', { devotionId, questionCount: questions.length })
+    loggedMount.current = true
+  }
   const [responses, setResponses] = useState<Record<string, string>>({})
   const [loaded, setLoaded] = useState(false)
   const [saving, setSaving] = useState<string | null>(null)

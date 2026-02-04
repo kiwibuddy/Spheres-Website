@@ -3,6 +3,8 @@
  * @see cursorrules.txt, CORRECTIONS_416_DEVOTIONS.md
  */
 
+console.log('[constants] loading')
+
 export const TOTAL_DEVOTIONS = 416
 export const DEVOTIONS_PER_SPHERE = 52
 export const TOTAL_SPHERES = 8

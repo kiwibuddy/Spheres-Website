@@ -1,6 +1,8 @@
 import Link from 'next/link'
 
 export function Footer() {
+  // Footer is server-rendered; log only in dev (server logs)
+  if (process.env.NODE_ENV === 'development') console.log('[Footer] render')
   return (
     <footer className="border-t border-white/20 bg-white/50 py-8 backdrop-blur-[20px]">
       <div className="mx-auto max-w-[1400px] px-6 sm:px-8">

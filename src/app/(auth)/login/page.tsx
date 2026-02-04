@@ -28,6 +28,10 @@ export default function LoginPage() {
     setError(null)
     try {
       const supabase = createClient()
+      if (!supabase) {
+        setError('Sign-in is not configured. Please add Supabase env vars.')
+        return
+      }
       const { error: signInError } = await supabase.auth.signInWithPassword({ email: data.email, password: data.password })
       if (signInError) {
         setError(signInError.message)

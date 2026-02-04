@@ -1,24 +1,47 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { DevotionPlayerWithProgress } from '@/components/features/DevotionPlayerWithProgress'
+import dynamic from 'next/dynamic'
 import { ReflectionResponses } from '@/components/features/ReflectionResponses'
 import { getDevotionById, getSphereBySlug } from '@/lib/devotions-data'
 import { getScriptureText } from '@/lib/scripture'
+
+const DevotionPlayerWithProgress = dynamic(
+  () => import('@/components/features/DevotionPlayerWithProgress').then((m) => m.DevotionPlayerWithProgress),
+  { ssr: false, loading: () => <div className="flex h-full w-full items-center justify-center bg-black/80 text-white">Loading video…</div> }
+)
 
 interface PageProps {
   params: { id: string }
 }
 
+const LOG_PREFIX = '[DevotionPage Server]'
+
 export default async function DevotionPage({ params }: PageProps) {
   const id = parseInt(params.id, 10)
-  if (Number.isNaN(id)) notFound()
+  console.log(LOG_PREFIX, 'params.id:', params?.id, 'parsed id:', id)
+  if (Number.isNaN(id)) {
+    console.warn(LOG_PREFIX, 'notFound: invalid id')
+    notFound()
+  }
 
   const devotion = getDevotionById(id)
-  if (!devotion) notFound()
+  console.log(LOG_PREFIX, 'devotion found:', !!devotion, devotion ? { id: devotion.id, title: devotion.title, slug: devotion.slug } : null)
+  if (!devotion) {
+    console.warn(LOG_PREFIX, 'notFound: no devotion for id', id)
+    notFound()
+  }
 
   const sphere = getSphereBySlug(devotion.slug)
-  const scripture = await getScriptureText(devotion.scripture_reference)
+  console.log(LOG_PREFIX, 'sphere:', sphere?.name ?? null)
+  let scripture = null
+  try {
+    scripture = await getScriptureText(devotion.scripture_reference)
+    console.log(LOG_PREFIX, 'scripture:', scripture ? 'ok' : 'null')
+  } catch (e) {
+    console.error(LOG_PREFIX, 'scripture fetch error:', e)
+  }
 
+  console.log(LOG_PREFIX, 'rendering JSX for devotion id', id)
   return (
     <div className="min-h-screen px-6 py-24 sm:px-8">
       <div className="mx-auto max-w-[900px]">

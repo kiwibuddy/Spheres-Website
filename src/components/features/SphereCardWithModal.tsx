@@ -5,6 +5,8 @@ import { useState } from 'react'
 import type { SphereConfig } from '@/lib/constants'
 import { SPHERE_INTROS } from '@/lib/constants'
 
+if (typeof window !== 'undefined') console.log('[SphereCardWithModal] loading')
+
 export interface SphereCardWithModalProps {
   sphere: SphereConfig
   completed: number

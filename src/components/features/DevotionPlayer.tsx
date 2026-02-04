@@ -3,6 +3,8 @@
 import dynamic from 'next/dynamic'
 import type { FC } from 'react'
 
+const LOG_PREFIX = '[DevotionPlayer]'
+
 const ReactPlayer = dynamic(() => import('react-player/youtube'), { ssr: false })
 
 export interface DevotionPlayerProps {
@@ -12,6 +14,7 @@ export interface DevotionPlayerProps {
 }
 
 export const DevotionPlayer: FC<DevotionPlayerProps> = ({ youtubeUrl, devotionId, onProgress }) => {
+  console.log(LOG_PREFIX, 'render', { devotionId, hasYoutubeUrl: !!youtubeUrl })
   const handleProgress = (state: { played: number }) => {
     const percentage = Math.floor(state.played * 100)
     onProgress(percentage)
