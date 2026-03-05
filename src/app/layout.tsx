@@ -17,8 +17,13 @@ const bricolageGrotesque = Bricolage_Grotesque({
 })
 
 export const metadata: Metadata = {
-  title: 'Sphere Devotions – Transform Your Worldview',
+  title: 'Sphere Devotions – Transform Your World-View',
   description: '416 biblical devotions across 8 spheres of influence. 52 devotions per sphere – one for every week of the year.',
+  appleWebApp: {
+    capable: true,
+    title: 'Sphere Devotions',
+    statusBarStyle: 'default',
+  },
 }
 
 export default function RootLayout({
