@@ -105,7 +105,7 @@ export function SearchSection({ isLoggedIn }: SearchSectionProps) {
   }
 
   return (
-    <section className="relative z-10 mx-auto max-w-[1400px] -mt-12 px-6 pb-12 sm:px-8" aria-labelledby="search-heading">
+    <section className="relative z-10 mx-auto max-w-[1400px] -mt-12 px-6 pb-12 sm:px-8 mb-16" aria-labelledby="search-heading">
       <div className="rounded-2xl border border-white/20 bg-white/70 p-6 shadow-glass sm:p-8">
         <h2 id="search-heading" className="font-heading text-xl font-bold text-text-primary sm:text-2xl">
           Search by topic
