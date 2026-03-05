@@ -23,13 +23,15 @@ export function NavigationStatic() {
           href="/"
           className="flex items-center gap-2.5 font-heading text-2xl font-bold tracking-tight text-text-primary"
         >
-          <Image
-            src="/logo.png"
-            alt="Sphere Devotions"
-            width={36}
-            height={36}
-            className="shrink-0"
-          />
+          <span className="flex shrink-0 items-center justify-center rounded-xl p-1">
+            <Image
+              src="/logo.png"
+              alt="Sphere Devotions"
+              width={40}
+              height={40}
+              className="shrink-0"
+            />
+          </span>
           <span className="bg-gradient-to-br from-education via-family to-religion bg-clip-text text-transparent">
             Sphere Devotions
           </span>

@@ -70,7 +70,15 @@ const GRID_CLASSES = [
 
 export default async function HomePage() {
   const supabase = await createClient()
-  const { data: { user } } = supabase ? await supabase.auth.getUser() : { data: { user: null } }
+  let user = null
+  try {
+    if (supabase) {
+      const { data } = await supabase.auth.getUser()
+      user = data.user
+    }
+  } catch {
+    // Supabase unreachable — render page without auth state
+  }
   const isLoggedIn = !!user
 
   const { completedCount, responsesCompletedCount, streak, sphereCompleted, badgesEarned, fullBadgesEarned } =
