@@ -16,9 +16,9 @@ function sortResults(results: SearchResult[]): SearchResult[] {
     if (!bySphere.has(slug)) bySphere.set(slug, [])
     bySphere.get(slug)!.push(r)
   }
-  for (const arr of bySphere.values()) {
+  Array.from(bySphere.values()).forEach((arr) => {
     arr.sort((a, b) => (b.similarity ?? 0) - (a.similarity ?? 0))
-  }
+  })
   const sphereOrder = SPHERES.map((s) => s.slug)
   const sorted: SearchResult[] = []
   const spheresWithResults = sphereOrder.filter((slug) => bySphere.has(slug))
