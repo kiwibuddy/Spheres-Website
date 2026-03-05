@@ -21,17 +21,15 @@ export function NavigationStatic() {
       <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 sm:px-8">
         <Link
           href="/"
-          className="flex items-center gap-2.5 font-heading text-2xl font-bold tracking-tight text-text-primary"
+          className="flex items-center gap-4 font-heading text-2xl font-bold tracking-tight text-text-primary"
         >
-          <span className="flex shrink-0 items-center justify-center rounded-xl p-1">
-            <Image
-              src="/logo.png"
-              alt="Sphere Devotions"
-              width={40}
-              height={40}
-              className="shrink-0"
-            />
-          </span>
+          <Image
+            src="/logo.png"
+            alt="Sphere Devotions"
+            width={28}
+            height={28}
+            className="shrink-0"
+          />
           <span className="bg-gradient-to-br from-education via-family to-religion bg-clip-text text-transparent">
             Sphere Devotions
           </span>
