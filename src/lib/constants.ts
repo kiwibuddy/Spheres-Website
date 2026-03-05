@@ -55,7 +55,8 @@ export const SPHERE_INTROS: Record<string, { short: string; full: string }> = {
   foundational:
     {
       short: 'The Foundational 52 key passages apply to the whole of society. They are the backbone of a biblical worldview that informs all of life.',
-      full: "The Foundational 52 key passages are passages that apply to the whole of society. They are 'foundational' because they are the backbone of a biblical worldview that informs all of life.",
+      full:
+        "The Foundational 52 devotions lay the groundwork for a biblical Christian worldview that applies to every area of life—not just your job or one sphere of interest. Drawing on five core truths about who God is, who we are, the nature of truth, the weight of our choices, and our calling to be change‑makers with God, these sessions help you see Scripture as the framework for all of reality. As you work through these 52, you'll be prepared to engage the 7 spheres of society with greater clarity, discernment, and confidence in God's purposes.",
     },
   family:
     {

@@ -31,7 +31,7 @@ function LoginForm() {
     try {
       const supabase = createClient()
       if (!supabase) {
-        setError('Sign-in is not configured. Please add Supabase env vars.')
+        setError('Sign-in is not configured. In Vercel: Project → Settings → Environment Variables, add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY, then redeploy.')
         return
       }
       const { error: signInError } = await supabase.auth.signInWithPassword({ email: data.email, password: data.password })

@@ -93,11 +93,11 @@ export default async function HomePage() {
             Transform Your
             <br />
             <span className="inline-block bg-gradient-to-br from-education via-family to-religion bg-clip-text text-transparent">
-              Worldview
+              World-View
             </span>
           </h1>
-          <p className="mx-auto mt-6 max-w-[700px] text-[clamp(1.1rem,2vw,1.4rem)] leading-relaxed text-text-secondary">
-            Build on the Foundational 52—a biblical worldview for all of life—then explore the 7 spheres of society. {DEVOTIONS_PER_SPHERE} devotions each. Track progress, earn achievements, and grow in understanding.
+          <p className="mx-auto mt-6 max-w-[900px] text-[clamp(1.1rem,2vw,1.4rem)] leading-relaxed text-text-secondary">
+            Discover a fresh way of seeing God&apos;s Word — one that changes how you see God&apos;s world — and find your role as a catalyst for change in your sphere of influence.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
             <Link
@@ -130,9 +130,14 @@ export default async function HomePage() {
           <h2 className="font-heading text-[clamp(2.5rem,5vw,4rem)] font-bold tracking-tight text-text-primary">
             Foundational Worldview + 7 Spheres
           </h2>
-          <p className="mx-auto mt-4 max-w-[640px] text-xl text-text-secondary">
-            Start with the Foundational 52—the backbone of a biblical worldview for all of life—then explore the 7 spheres of society. Each has {DEVOTIONS_PER_SPHERE} weekly devotions.
-          </p>
+          <div className="mx-auto mt-4 max-w-[900px] space-y-6 text-xl leading-relaxed text-text-secondary">
+            <p>
+              Begin your journey by grounding yourself in the Foundational 52 devotions, designed to establish a robust biblical Christian worldview.
+            </p>
+            <p>
+              Then continue with 7 tracks (Spheres of Society), each with {DEVOTIONS_PER_SPHERE} devotions that dig into how the kingdom of God reshapes our view of family, work, culture, and public life.
+            </p>
+          </div>
         </div>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-12 lg:grid-rows-[300px_300px_300px]">
           {SPHERES.map((sphere, i) => {

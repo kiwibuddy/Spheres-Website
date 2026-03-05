@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { getSphereBySlug } from '@/lib/constants'
+import { getSphereBySlug, SPHERE_INTROS } from '@/lib/constants'
 import { getDevotionsBySphereSlug } from '@/lib/devotions-data'
 import type { StaticDevotion } from '@/lib/devotions-data'
 import { DEVOTIONS_PER_SPHERE } from '@/lib/constants'
@@ -59,6 +59,11 @@ export default async function SpherePage({ params }: PageProps) {
         </div>
         <h1 className="font-heading text-4xl font-bold text-text-primary">{sphere.name}</h1>
         <p className="mt-2 text-lg text-text-secondary">{sphere.description}</p>
+        {SPHERE_INTROS[params.slug]?.full && (
+          <p className="mt-6 text-lg leading-relaxed text-text-secondary">
+            {SPHERE_INTROS[params.slug].full}
+          </p>
+        )}
         <p className="mt-4 text-sm text-text-secondary">
           {DEVOTIONS_PER_SPHERE} devotions · 1 per week
         </p>

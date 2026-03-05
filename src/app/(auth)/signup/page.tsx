@@ -33,7 +33,7 @@ export default function SignupPage() {
     try {
       const supabase = createClient()
       if (!supabase) {
-        setError('Sign-up is not configured. Please add Supabase env vars.')
+        setError('Sign-up is not configured. In Vercel: Project → Settings → Environment Variables, add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY, then redeploy.')
         return
       }
       const { error: signUpError } = await supabase.auth.signUp({ email: data.email, password: data.password })
