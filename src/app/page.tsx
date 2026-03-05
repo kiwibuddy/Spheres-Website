@@ -133,7 +133,7 @@ export default async function HomePage() {
       <SearchSection isLoggedIn={isLoggedIn} />
 
       {/* Foundational + 7 Spheres Bento */}
-      <section id="spheres" className="mx-auto max-w-[1400px] px-6 pb-24 pt-20 sm:px-8">
+      <section id="spheres" className="mx-auto max-w-[1400px] px-6 pb-24 pt-16 sm:px-8">
         <div className="mb-16 text-center">
           <h2 className="font-heading text-[clamp(2.5rem,5vw,4rem)] font-bold tracking-tight text-text-primary">
             Foundational Worldview + 7 Spheres
