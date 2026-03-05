@@ -57,6 +57,7 @@ export function SearchSection({ isLoggedIn }: SearchSectionProps) {
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
   const [expanded, setExpanded] = useState(false)
+  const [apiError, setApiError] = useState<string | null>(null)
 
   const sortedResults = useMemo(() => sortResults(results), [results])
   const visibleResults = expanded ? sortedResults : sortedResults.slice(0, INITIAL_SHOW)
@@ -67,19 +68,28 @@ export function SearchSection({ isLoggedIn }: SearchSectionProps) {
     if (!trimmed) {
       setResults([])
       setSearched(false)
+      setApiError(null)
       return
     }
     if (!isLoggedIn) return
     setLoading(true)
     setSearched(true)
     setExpanded(false)
+    setApiError(null)
     try {
       const res = await fetch(`/api/search?q=${encodeURIComponent(trimmed)}`)
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Search failed')
+      if (!res.ok) {
+        const message = data?.error ?? 'Search failed'
+        setApiError(message)
+        setResults([])
+        return
+      }
+      setApiError(null)
       setResults(data.results ?? [])
     } catch (e) {
       console.error('Search error:', e)
+      setApiError('Search failed. Please try again.')
       setResults([])
     } finally {
       setLoading(false)
@@ -162,7 +172,22 @@ export function SearchSection({ isLoggedIn }: SearchSectionProps) {
 
         {isLoggedIn && !loading && searched && (
           <div className="mt-6">
-            {results.length === 0 ? (
+            {apiError ? (
+              <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-800">
+                <p className="font-medium">Search unavailable</p>
+                <p className="mt-1 text-sm">{apiError}</p>
+                {apiError.includes('Sign in') && (
+                  <div className="mt-4 flex gap-3">
+                    <Link href="/login" className="rounded-xl bg-text-primary px-5 py-2.5 text-sm font-semibold text-cream transition hover:opacity-90">
+                      Log in
+                    </Link>
+                    <Link href="/signup" className="rounded-xl border-2 border-text-primary px-5 py-2.5 text-sm font-semibold text-text-primary transition hover:bg-text-primary hover:text-cream">
+                      Create account
+                    </Link>
+                  </div>
+                )}
+              </div>
+            ) : results.length === 0 ? (
               <p className="text-center text-text-secondary">
                 No key passages found for &quot;{query.trim()}&quot;. Try a different topic.
               </p>

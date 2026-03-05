@@ -56,6 +56,42 @@ The search API limits each IP to **30 requests per minute** to prevent abuse. Th
 
 3. **Run the app** and use Search on the home page (above “Foundational Worldview + 7 Spheres”).
 
+## Production (Vercel) checklist
+
+Search uses **OpenAI embeddings** and **Supabase pgvector**; it does not use Algolia or Typesense. On the live site, "No key passages found" or "Search unavailable" usually means one of the following.
+
+### 1. `OPENAI_API_KEY` not set on Vercel
+
+The API returns **503** with message *"Search not configured (OPENAI_API_KEY missing)"*. The app now shows this in the search area.
+
+- In **Vercel** → your project → **Settings** → **Environment Variables**
+- Add `OPENAI_API_KEY` with your OpenAI API key (same as in `.env.local`)
+- Redeploy so the new variable is applied
+
+### 2. Embeddings not backfilled in production
+
+The search RPC only returns devotions that have a non-null `search_embedding`. If the production database was never backfilled, every search returns 0 rows and you see *"No key passages found"*.
+
+**Fix:** Run the backfill against the **production** Supabase project:
+
+1. Use env vars that point at production: `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (and `OPENAI_API_KEY`) for production.
+2. Run once: `npm run backfill-embeddings`
+
+You can do this from your machine with a `.env.production.local` (or a one-off script that loads production env), or run the script in a CI step that has production credentials. The backfill is one-time and costs about $0.01 in OpenAI usage.
+
+### 3. OpenAI quota or billing
+
+If you hit rate limits or run out of credits, the API returns **500** and the app shows *"Search failed"* or *"Search failed. Please try again."*
+
+- Check [platform.openai.com/account/usage](https://platform.openai.com/account/usage) and [platform.openai.com/settings/organization/billing](https://platform.openai.com/settings/organization/billing)
+- Embedding costs are very low (~$0.02 per 1M tokens); a $5 monthly cap is usually enough for thousands of searches
+
+### 4. "Sign in to search" (401)
+
+If the API returns **401**, the server could not read the user session (e.g. cookies not sent or wrong domain). The app now surfaces *"Sign in to search"* from the API. Ensure Supabase auth and cookie settings are correct for your production domain.
+
+---
+
 ## Security
 
 - Never commit `.env.local` (it is in `.gitignore`)
