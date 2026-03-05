@@ -1,12 +1,9 @@
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
-import { getProgressByDevotionIds } from '@/lib/supabase/progress'
 import { getSphereBySlug } from '@/lib/constants'
 import { getDevotionsBySphereSlug } from '@/lib/devotions-data'
 import type { StaticDevotion } from '@/lib/devotions-data'
 import { DEVOTIONS_PER_SPHERE } from '@/lib/constants'
-import { DevotionCard } from '@/components/features/DevotionCard'
+import { SphereDevotionList } from '@/components/features/SphereDevotionList'
 
 interface PageProps {
   params: { slug: string }
@@ -46,23 +43,7 @@ export default async function SpherePage({ params }: PageProps) {
 
   const devotions = getDevotionsBySphereSlug(params.slug)
   const byCategory = groupByCategory(devotions)
-
-  let progressByDevotionId: Record<number, { completed: boolean; watch_percentage: number }> = {}
-  const supabase = await createClient()
-  if (supabase) {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-      try {
-        progressByDevotionId = await getProgressByDevotionIds(
-          supabase,
-          user.id,
-          devotions.map((d) => d.id)
-        )
-      } catch {
-        // keep empty map
-      }
-    }
-  }
+  const idsParam = devotions.map((d) => d.id).join(',')
 
   return (
     <div className="min-h-screen px-6 py-24 sm:px-8">
@@ -82,27 +63,7 @@ export default async function SpherePage({ params }: PageProps) {
           {DEVOTIONS_PER_SPHERE} devotions · 1 per week
         </p>
 
-        <div className="mt-12 space-y-12" aria-label={`Devotions in ${sphere.name}`}>
-          {byCategory.map(({ categoryTitle, devotions: categoryDevotions }, idx) => (
-            <section key={idx} aria-labelledby={`category-${params.slug}-${idx}`}>
-              <h2
-                id={`category-${params.slug}-${idx}`}
-                className="font-heading text-xl font-semibold text-text-primary border-b border-white/30 pb-2 mb-6"
-              >
-                {categoryTitle}
-              </h2>
-              <ul className="grid gap-4 sm:grid-cols-2">
-                {categoryDevotions.map((d) => (
-                  <DevotionCard
-                    key={d.id}
-                    devotion={d}
-                    progress={progressByDevotionId[d.id] ?? null}
-                  />
-                ))}
-              </ul>
-            </section>
-          ))}
-        </div>
+        <SphereDevotionList slug={params.slug} byCategory={byCategory} idsParam={idsParam} />
       </div>
     </div>
   )

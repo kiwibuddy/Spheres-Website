@@ -39,3 +39,9 @@ next-env.d.ts
 
 # Misc
 *.zip
+
+# Supabase CLI
+supabase/.temp/
+
+# Transcript pipeline artifacts
+scripts/out/

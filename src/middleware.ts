@@ -22,10 +22,12 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const isAuthRoute = pathname === '/login' || pathname === '/signup'
   const isDashboard = pathname.startsWith('/dashboard')
+  const isDevotionPage = pathname.startsWith('/devotions/')
 
-  if (isDashboard && !(await supabase.auth.getUser()).data.user) {
+  if ((isDashboard || isDevotionPage) && !(await supabase.auth.getUser()).data.user) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
+    url.searchParams.set('redirect', pathname)
     return NextResponse.redirect(url)
   }
   if (isAuthRoute && (await supabase.auth.getUser()).data.user) {
@@ -38,5 +40,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login', '/signup'],
+  matcher: ['/dashboard/:path*', '/devotions/:path*', '/login', '/signup'],
 }

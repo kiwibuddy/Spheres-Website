@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Government Sphere - 2026 Modern Overview</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            /* 2026 Accessible Government Color Palette (WCAG 2.1 AA Compliant) */
+            --primary-teal: #0095A8;
+            --primary-navy: #112E51;
+            --accent-coral: #E76F51;
+            --accent-amber: #F4A261;
+            --neutral-slate: #78909C;
+            --neutral-light: #E8EEF1;
+            --bg-dark: #0A1628;
+            --bg-medium: #1A2C42;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --text-primary: #F0F4F8;
+            --text-secondary: #B8C5D0;
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --glow-primary: rgba(0, 149, 168, 0.4);
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-medium) 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+        
+        /* 2026 Glassmorphism Header */
+        header {
+            background: linear-gradient(135deg, 
+                rgba(0, 149, 168, 0.08) 0%, 
+                rgba(17, 46, 81, 0.12) 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 56px 40px;
+            margin-bottom: 48px;
+            border: 1px solid var(--border-subtle);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent 0%,
+                var(--primary-teal) 25%,
+                var(--accent-coral) 50%,
+                var(--primary-teal) 75%,
+                transparent 100%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-teal), var(--accent-coral));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+        
+        .subtitle {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-bottom: 24px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .series-context {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0, 149, 168, 0.12);
+            padding: 12px 24px;
+            border-radius: 100px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border: 1px solid rgba(0, 149, 168, 0.3);
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.3s ease;
+        }
+        
+        .series-context:hover {
+            background: rgba(0, 149, 168, 0.18);
+            border-color: var(--primary-teal);
+        }
+        
+        /* 2026 Minimal Stats Cards - Inspired by Modern Dashboard Design */
+        .overview-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 48px;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            padding: 32px 28px;
+            border-radius: 16px;
+            border: 1px solid var(--border-subtle);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary-teal), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--primary-teal);
+            box-shadow: 0 12px 24px rgba(0, 149, 168, 0.15);
+        }
+        
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+        
+        .stat-number {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 700;
+            color: var(--primary-teal);
+            font-family: 'JetBrains Mono', monospace;
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .stat-sublabel {
+            font-size: 0.85rem;
+            color: var(--neutral-slate);
+            font-weight: 400;
+        }
+        
+        /* 2026 Section Styling - Clean & Spacious */
+        .section {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 32px;
+            border: 1px solid var(--border-subtle);
+            transition: border-color 0.3s ease;
+        }
+        
+        .section:hover {
+            border-color: rgba(0, 149, 168, 0.3);
+        }
+        
+        h2 {
+            font-size: clamp(1.8rem, 3vw, 2.2rem);
+            color: var(--primary-teal);
+            margin-bottom: 28px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        
+        h2::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(180deg, var(--primary-teal), var(--accent-coral));
+            border-radius: 2px;
+        }
+        
+        h3 {
+            font-size: clamp(1.2rem, 2vw, 1.5rem);
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        /* 2026 Word Cloud - Improved Accessibility with Direct Labels */
+        .word-cloud-container {
+            background: rgba(0, 149, 168, 0.03);
+            padding: 48px 32px;
+            border-radius: 16px;
+            border: 1px dashed rgba(0, 149, 168, 0.2);
+            min-height: 400px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .word {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 4px;
+            background: linear-gradient(135deg, 
+                rgba(0, 149, 168, 0.1), 
+                rgba(231, 111, 81, 0.1));
+            border: 1px solid rgba(0, 149, 168, 0.3);
+            border-radius: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            animation: fadeInWord 0.6s ease-out forwards;
+            cursor: default;
+        }
+        
+        @keyframes fadeInWord {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .word:hover {
+            background: linear-gradient(135deg, 
+                rgba(0, 149, 168, 0.2), 
+                rgba(231, 111, 81, 0.2));
+            border-color: var(--primary-teal);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px var(--glow-primary);
+        }
+        
+        /* Category-based colors with accessibility in mind */
+        .word[data-category="theological"] {
+            border-color: var(--primary-teal);
+            background: rgba(0, 149, 168, 0.12);
+        }
+        
+        .word[data-category="action"] {
+            border-color: var(--accent-coral);
+            background: rgba(231, 111, 81, 0.12);
+        }
+        
+        .word[data-category="concept"] {
+            border-color: var(--accent-amber);
+            background: rgba(244, 162, 97, 0.12);
+        }
+        
+        .word[data-category="role"] {
+            border-color: var(--neutral-slate);
+            background: rgba(120, 144, 156, 0.12);
+        }
+        
+        /* 2026 Chart Containers - Modern & Clean */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+        
+        .chart-container {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 32px 24px;
+            border-radius: 16px;
+            border: 1px solid var(--border-subtle);
+            height: 380px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .chart-container:hover {
+            border-color: rgba(0, 149, 168, 0.3);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .chart-title::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--primary-teal);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--glow-primary);
+        }
+        
+        /* Theme Structure - 2026 Minimal Cards */
+        .structure-flow {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+        
+        .theme-card {
+            background: linear-gradient(135deg, 
+                rgba(0, 149, 168, 0.05), 
+                rgba(17, 46, 81, 0.08));
+            padding: 24px;
+            border-radius: 12px;
+            border-left: 3px solid var(--primary-teal);
+            transition: all 0.3s ease;
+        }
+        
+        .theme-card:hover {
+            transform: translateX(4px);
+            border-left-color: var(--accent-coral);
+            background: linear-gradient(135deg, 
+                rgba(0, 149, 168, 0.1), 
+                rgba(17, 46, 81, 0.12));
+        }
+        
+        .theme-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-teal);
+            margin-bottom: 8px;
+        }
+        
+        .theme-verse {
+            font-size: 0.9rem;
+            color: var(--neutral-slate);
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 12px;
+        }
+        
+        .theme-description {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        /* Crossover Cards - Modern Grid Layout */
+        .crossover-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            margin-top: 24px;
+        }
+        
+        .crossover-card {
+            background: linear-gradient(135deg, 
+                rgba(231, 111, 81, 0.05), 
+                rgba(244, 162, 97, 0.05));
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid rgba(231, 111, 81, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+        }
+        
+        .crossover-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-coral);
+            box-shadow: 0 8px 20px rgba(231, 111, 81, 0.2);
+        }
+        
+        .crossover-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            filter: grayscale(0.3);
+        }
+        
+        .crossover-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-coral);
+            margin-bottom: 8px;
+        }
+        
+        .crossover-ref {
+            font-size: 0.85rem;
+            color: var(--neutral-slate);
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 12px;
+        }
+        
+        /* Accessibility Features - 2026 Standards */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+            
+            header {
+                padding: 40px 24px;
+            }
+            
+            .section {
+                padding: 28px 20px;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Focus Indicators for Accessibility */
+        *:focus-visible {
+            outline: 2px solid var(--primary-teal);
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+        
+        /* High Contrast Mode Support */
+        @media (prefers-contrast: high) {
+            :root {
+                --primary-teal: #00D4E8;
+                --accent-coral: #FF9B85;
+                --text-primary: #FFFFFF;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header role="banner">
+            <h1>Government Sphere</h1>
+            <p class="subtitle">Biblical Foundations for Public Justice, Authority, and Covenant Community</p>
+            <div class="series-context">
+                <span>📖</span>
+                <span>Part of the Seven Spheres Biblical Analysis Series</span>
+            </div>
+        </header>
+        
+        <!-- Overview Statistics -->
+        <section class="overview-stats" role="region" aria-label="Overview Statistics">
+            <div class="stat-card">
+                <div class="stat-number" aria-label="Total passages analyzed">52</div>
+                <div class="stat-label">Total Passages</div>
+                <div class="stat-sublabel">Across Old & New Testament</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" aria-label="Core biblical themes">8</div>
+                <div class="stat-label">Core Themes</div>
+                <div class="stat-sublabel">Foundational Concepts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" aria-label="Contemporary social issues">12</div>
+                <div class="stat-label">Social Issues</div>
+                <div class="stat-sublabel">Modern Applications</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" aria-label="Crossover connections">6</div>
+                <div class="stat-label">Crossovers</div>
+                <div class="stat-sublabel">Inter-sphere Connections</div>
+            </div>
+        </section>
+        
+        <!-- Word Frequency Analysis -->
+        <section class="section" role="region" aria-labelledby="word-analysis-heading">
+            <h2 id="word-analysis-heading">Key Concept Analysis</h2>
+            <h3>Most Frequent Themes & Terms</h3>
+            <div class="word-cloud-container" id="wordCloud" role="list" aria-label="Word frequency visualization">
+                <!-- Words will be dynamically inserted here with accessible labels -->
+            </div>
+            <p style="color: var(--text-secondary); margin-top: 20px; font-size: 0.9rem;">
+                💡 Hover over terms to see emphasis. Colors indicate categories: 
+                <span style="color: var(--primary-teal);">Theological</span>, 
+                <span style="color: var(--accent-coral);">Action</span>, 
+                <span style="color: var(--accent-amber);">Concept</span>, 
+                <span style="color: var(--neutral-slate);">Role</span>
+            </p>
+        </section>
+        
+        <!-- Biblical Distribution Charts -->
+        <section class="section" role="region" aria-labelledby="distribution-heading">
+            <h2 id="distribution-heading">Biblical Distribution</h2>
+            
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-title">Testament Balance</div>
+                    <canvas id="testamentChart" role="img" aria-label="Doughnut chart showing distribution between Old Testament and New Testament passages"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Top Biblical Books</div>
+                    <canvas id="booksChart" role="img" aria-label="Horizontal bar chart showing passages per biblical book"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Social Issues Emphasis</div>
+                    <canvas id="issuesChart" role="img" aria-label="Radar chart showing emphasis on various contemporary social issues"></canvas>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Core Themes -->
+        <section class="section" role="region" aria-labelledby="themes-heading">
+            <h2 id="themes-heading">Core Biblical Themes</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 24px;">
+                Eight foundational concepts that define government's role from a biblical perspective
+            </p>
+            
+            <div class="structure-flow">
+                <div class="theme-card">
+                    <div class="theme-name">God's Ultimate Authority</div>
+                    <div class="theme-verse">Psalm 22:28, Romans 13:1</div>
+                    <div class="theme-description">
+                        All earthly authority flows from God's sovereignty. Governments are established by divine permission to serve God's purposes in ordering society.
+                    </div>
+                </div>
+                
+                <div class="theme-card">
+                    <div class="theme-name">Justice & Righteousness</div>
+                    <div class="theme-verse">Amos 5:24, Micah 6:8</div>
+                    <div class="theme-description">
+                        Government's primary mandate is establishing justice, particularly protecting the vulnerable and ensuring equitable treatment under law.
+                    </div>
+                </div>
+                
+                <div class="theme-card">
+                    <div class="theme-name">Covenant Community</div>
+                    <div class="theme-verse">Exodus 19:5-6, 1 Peter 2:9</div>
+                    <div class="theme-description">
+                        Society functions best when governed by covenantal relationships based on mutual commitment, responsibility, and accountability.
+                    </div>
+                </div>
+                
+                <div class="theme-card">
+                    <div class="theme-name">Protection of the Vulnerable</div>
+                    <div class="theme-verse">Deuteronomy 10:18, James 1:27</div>
+                    <div class="theme-description">
+                        A key measure of governmental righteousness is how it treats orphans, widows, immigrants, and the poor.
+                    </div>
+                </div>
+                
+                <div class="theme-card">
+                    <div class="theme-name">Rule of Law</div>
+                    <div class="theme-verse">Deuteronomy 17:18-20</div>
+                    <div class="theme-description">
+                        Even kings are subject to God's law. No leader is above accountability, and law must apply equally to all.
+                    </div>
+                </div>
+                
+                <div class="theme-card">
+                    <div class="theme-name">Submission & Resistance</div>
+                    <div class="theme-verse">Romans 13:1-7, Acts 5:29</div>
+                    <div class="theme-description">
+                        Christians submit to governing authorities, but when government demands what contradicts God's commands, obedience to God takes precedence.
+                    </div>
+                </div>
+                
+                <div class="theme-card">
+                    <div class="theme-name">Common Good</div>
+                    <div class="theme-verse">Jeremiah 29:7</div>
+                    <div class="theme-description">
+                        Believers should actively seek the welfare of their cities and nations, praying for and contributing to societal flourishing.
+                    </div>
+                </div>
+                
+                <div class="theme-card">
+                    <div class="theme-name">Limits of Government</div>
+                    <div class="theme-verse">1 Samuel 8:10-18</div>
+                    <div class="theme-description">
+                        Scripture warns against excessive governmental power and recognizes legitimate limits to state authority over conscience, family, and worship.
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Sphere Crossovers -->
+        <section class="section" role="region" aria-labelledby="crossover-heading">
+            <h2 id="crossover-heading">Inter-Sphere Connections</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 24px;">
+                Government intersects with other societal spheres, requiring coordination and respect for distinct roles
+            </p>
+            
+            <div class="crossover-grid">
+                <div class="crossover-card">
+                    <div class="crossover-icon">👨‍👩‍👧‍👦</div>
+                    <div class="crossover-title">Family</div>
+                    <div class="crossover-ref">Deuteronomy 6:6-9</div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">
+                        Government supports families but doesn't replace parental authority in child-rearing and moral formation.
+                    </p>
+                </div>
+                
+                <div class="crossover-card">
+                    <div class="crossover-icon">⛪</div>
+                    <div class="crossover-title">Religion</div>
+                    <div class="crossover-ref">Matthew 22:21</div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">
+                        "Render to Caesar" acknowledges distinct spheres—government handles civil order while church addresses spiritual matters.
+                    </p>
+                </div>
+                
+                <div class="crossover-card">
+                    <div class="crossover-icon">💼</div>
+                    <div class="crossover-title">Economy</div>
+                    <div class="crossover-ref">Leviticus 19:13</div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">
+                        Government regulates commerce to ensure justice in wages, contracts, and protection of workers' rights.
+                    </p>
+                </div>
+                
+                <div class="crossover-card">
+                    <div class="crossover-icon">📚</div>
+                    <div class="crossover-title">Education</div>
+                    <div class="crossover-ref">Deuteronomy 31:12-13</div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">
+                        Government can facilitate education but shouldn't monopolize it—families and communities have primary educational responsibility.
+                    </p>
+                </div>
+                
+                <div class="crossover-card">
+                    <div class="crossover-icon">📢</div>
+                    <div class="crossover-title">Media/Communication</div>
+                    <div class="crossover-ref">Proverbs 29:2</div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">
+                        Free speech and truth-telling essential for accountability—government shouldn't control public discourse.
+                    </p>
+                </div>
+                
+                <div class="crossover-card">
+                    <div class="crossover-icon">🎭</div>
+                    <div class="crossover-title">Celebration</div>
+                    <div class="crossover-ref">Esther 9:19-22</div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">
+                        Government can recognize and protect cultural celebrations that strengthen community bonds and shared identity.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <script>
+        // 2026 Color Palette - WCAG 2.1 AA Compliant
+        const colors2026 = {
+            primary: {
+                teal: 'rgb(0, 149, 168)',
+                navy: 'rgb(17, 46, 81)',
+                coral: 'rgb(231, 111, 81)',
+                amber: 'rgb(244, 162, 97)',
+                slate: 'rgb(120, 144, 156)'
+            },
+            alpha: {
+                teal: 'rgba(0, 149, 168, 0.85)',
+                coral: 'rgba(231, 111, 81, 0.85)',
+                amber: 'rgba(244, 162, 97, 0.85)',
+                slate: 'rgba(120, 144, 156, 0.85)'
+            }
+        };
+        
+        // Word Cloud Data with Enhanced Accessibility
+        const words = [
+            { text: 'God/Lord', size: 28, count: 95, category: 'theological', delay: 0 },
+            { text: 'Justice', size: 26, count: 78, category: 'concept', delay: 0.05 },
+            { text: 'Authority', size: 24, count: 65, category: 'concept', delay: 0.1 },
+            { text: 'King/Ruler', size: 24, count: 58, category: 'role', delay: 0.15 },
+            { text: 'Law/Command', size: 22, count: 52, category: 'concept', delay: 0.2 },
+            { text: 'People/Nation', size: 22, count: 48, category: 'role', delay: 0.25 },
+            { text: 'Righteousness', size: 20, count: 42, category: 'concept', delay: 0.3 },
+            { text: 'Judge/Judgment', size: 20, count: 38, category: 'action', delay: 0.35 },
+            { text: 'Obey/Submit', size: 19, count: 35, category: 'action', delay: 0.4 },
+            { text: 'Power', size: 19, count: 32, category: 'concept', delay: 0.45 },
+            { text: 'Covenant', size: 18, count: 28, category: 'theological', delay: 0.5 },
+            { text: 'Poor/Oppressed', size: 18, count: 26, category: 'role', delay: 0.55 },
+            { text: 'Protection', size: 17, count: 24, category: 'action', delay: 0.6 },
+            { text: 'Establish', size: 17, count: 22, category: 'action', delay: 0.65 },
+            { text: 'Servant Leader', size: 16, count: 20, category: 'role', delay: 0.7 },
+            { text: 'Accountability', size: 16, count: 18, category: 'concept', delay: 0.75 },
+            { text: 'Common Good', size: 15, count: 16, category: 'concept', delay: 0.8 }
+        ];
+        
+        // Render Word Cloud with Accessibility
+        const wordCloud = document.getElementById('wordCloud');
+        words.forEach((word, index) => {
+            const span = document.createElement('span');
+            span.className = 'word';
+            span.textContent = `${word.text} (${word.count})`;
+            span.style.fontSize = `${word.size}px`;
+            span.style.animationDelay = `${word.delay}s`;
+            span.setAttribute('data-category', word.category);
+            span.setAttribute('role', 'listitem');
+            span.setAttribute('aria-label', `${word.text}, mentioned ${word.count} times`);
+            wordCloud.appendChild(span);
+        });
+        
+        // Chart.js Global Defaults for 2026
+        Chart.defaults.color = 'rgb(184, 197, 208)';
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.font.size = 13;
+        Chart.defaults.plugins.legend.labels.usePointStyle = true;
+        Chart.defaults.plugins.legend.labels.padding = 15;
+        
+        // Testament Balance Chart - Accessible Doughnut
+        const testamentCtx = document.getElementById('testamentChart').getContext('2d');
+        new Chart(testamentCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Old Testament', 'New Testament'],
+                datasets: [{
+                    data: [29, 23],
+                    backgroundColor: [
+                        colors2026.alpha.teal,
+                        colors2026.alpha.coral
+                    ],
+                    borderColor: [
+                        colors2026.primary.teal,
+                        colors2026.primary.coral
+                    ],
+                    borderWidth: 2,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { 
+                            color: 'rgb(184, 197, 208)',
+                            padding: 20,
+                            font: { size: 13, weight: 500 }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(10, 22, 40, 0.95)',
+                        titleColor: colors2026.primary.teal,
+                        bodyColor: 'rgb(240, 244, 248)',
+                        borderColor: colors2026.primary.teal,
+                        borderWidth: 1,
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return `${context.label}: ${context.parsed} passages (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Top Biblical Books - Horizontal Bar Chart
+        const booksCtx = document.getElementById('booksChart').getContext('2d');
+        new Chart(booksCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Deuteronomy', 'Romans', 'Psalms', 'Isaiah', 'Matthew', 'Proverbs', 'Exodus', '1 Samuel'],
+                datasets: [{
+                    label: 'Passages',
+                    data: [8, 6, 5, 5, 4, 4, 3, 3],
+                    backgroundColor: colors2026.alpha.teal,
+                    borderColor: colors2026.primary.teal,
+                    borderWidth: 2,
+                    borderRadius: 6,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(10, 22, 40, 0.95)',
+                        titleColor: colors2026.primary.teal,
+                        bodyColor: 'rgb(240, 244, 248)',
+                        borderColor: colors2026.primary.teal,
+                        borderWidth: 1,
+                        padding: 12
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: { 
+                            color: 'rgb(184, 197, 208)',
+                            font: { size: 12 }
+                        },
+                        grid: { 
+                            color: 'rgba(255, 255, 255, 0.08)',
+                            lineWidth: 1
+                        },
+                        border: { display: false }
+                    },
+                    y: {
+                        ticks: { 
+                            color: 'rgb(184, 197, 208)',
+                            font: { size: 12, weight: 500 }
+                        },
+                        grid: { display: false },
+                        border: { display: false }
+                    }
+                }
+            }
+        });
+        
+        // Social Issues Emphasis - Radar Chart with Patterns
+        const issuesCtx = document.getElementById('issuesChart').getContext('2d');
+        new Chart(issuesCtx, {
+            type: 'radar',
+            data: {
+                labels: [
+                    'Justice for Vulnerable',
+                    'Authority Accountability',
+                    'Religious Freedom',
+                    'Economic Equity',
+                    'Rule of Law',
+                    'Common Good Focus',
+                    'Immigration Rights',
+                    'Government Limits'
+                ],
+                datasets: [{
+                    label: 'Biblical Emphasis',
+                    data: [18, 16, 14, 12, 15, 13, 10, 11],
+                    backgroundColor: 'rgba(0, 149, 168, 0.15)',
+                    borderColor: colors2026.primary.teal,
+                    borderWidth: 3,
+                    pointBackgroundColor: colors2026.primary.teal,
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: colors2026.primary.teal,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(10, 22, 40, 0.95)',
+                        titleColor: colors2026.primary.teal,
+                        bodyColor: 'rgb(240, 244, 248)',
+                        borderColor: colors2026.primary.teal,
+                        borderWidth: 1,
+                        padding: 12
+                    }
+                },
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 20,
+                        ticks: { 
+                            color: 'rgb(184, 197, 208)',
+                            backdropColor: 'transparent',
+                            stepSize: 5,
+                            font: { size: 11 }
+                        },
+                        grid: { 
+                            color: 'rgba(255, 255, 255, 0.08)',
+                            lineWidth: 1
+                        },
+                        angleLines: { 
+                            color: 'rgba(255, 255, 255, 0.08)',
+                            lineWidth: 1
+                        },
+                        pointLabels: { 
+                            color: 'rgb(184, 197, 208)',
+                            font: { size: 11, weight: 500 }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Announce page load completion for screen readers
+        setTimeout(() => {
+            const announcement = document.createElement('div');
+            announcement.setAttribute('role', 'status');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.className = 'visually-hidden';
+            announcement.textContent = 'Page loaded. Interactive data visualizations are now available.';
+            document.body.appendChild(announcement);
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -1,5 +1,54 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import { getProgressByDevotionIds } from '@/lib/supabase/progress'
+
+/** GET /api/progress?ids=1,2,3 returns progress for those devotion IDs for the current user. */
+export async function GET(request: Request) {
+  try {
+    const supabase = await createClient()
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Progress is not configured' },
+        { status: 503 }
+      )
+    }
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return NextResponse.json({ progress: {} })
+    }
+    const { searchParams } = new URL(request.url)
+    const idsParam = searchParams.get('ids')
+    if (!idsParam) {
+      return NextResponse.json({ progress: {} })
+    }
+    const devotionIds = idsParam
+      .split(',')
+      .map((s) => parseInt(s.trim(), 10))
+      .filter((n) => Number.isFinite(n))
+    if (devotionIds.length === 0) {
+      return NextResponse.json({ progress: {} })
+    }
+    const progress = await getProgressByDevotionIds(supabase, user.id, devotionIds)
+    const progressForClient: Record<
+      number,
+      { completed: boolean; watch_percentage: number; responses_completed: boolean }
+    > = {}
+    for (const [id, p] of Object.entries(progress)) {
+      progressForClient[Number(id)] = {
+        completed: p.completed,
+        watch_percentage: p.watch_percentage,
+        responses_completed: p.responses_completed ?? false,
+      }
+    }
+    return NextResponse.json({ progress: progressForClient })
+  } catch (e) {
+    console.error('Progress GET error:', e)
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : 'Failed to load progress' },
+      { status: 500 }
+    )
+  }
+}
 
 export async function POST(request: Request) {
   try {

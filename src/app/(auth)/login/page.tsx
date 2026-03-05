@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -15,8 +15,10 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get('redirect') || '/dashboard'
   const [error, setError] = useState<string | null>(null)
   const {
     register,
@@ -37,7 +39,7 @@ export default function LoginPage() {
         setError(signInError.message)
         return
       }
-      router.push('/dashboard')
+      router.push(redirectTo.startsWith('/') ? redirectTo : '/dashboard')
       router.refresh()
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong')
@@ -97,5 +99,25 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center px-6 py-24">
+        <div className="w-full max-w-md rounded-3xl border border-white/20 bg-white/70 p-8 shadow-glass">
+          <div className="animate-pulse space-y-6">
+            <div className="h-8 w-48 rounded bg-gray-200" />
+            <div className="h-4 w-64 rounded bg-gray-200" />
+            <div className="h-12 rounded bg-gray-200" />
+            <div className="h-12 rounded bg-gray-200" />
+            <div className="h-12 rounded bg-gray-200" />
+          </div>
+        </div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   )
 }

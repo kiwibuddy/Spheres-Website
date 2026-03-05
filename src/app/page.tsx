@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { getCompletedCount, getResponsesCompletedCount, getSphereProgress, getStreak } from '@/lib/supabase/progress'
 import { SPHERES, ACHIEVEMENT_BADGES, FULL_COMPLETION_BADGES, TOTAL_DEVOTIONS, DEVOTIONS_PER_SPHERE, SPHERE_INTROS } from '@/lib/constants'
+import { SearchSection } from '@/components/features/SearchSection'
 
 async function getHomeProgress() {
   try {
@@ -68,6 +69,10 @@ const GRID_CLASSES = [
 ]
 
 export default async function HomePage() {
+  const supabase = await createClient()
+  const { data: { user } } = supabase ? await supabase.auth.getUser() : { data: { user: null } }
+  const isLoggedIn = !!user
+
   const { completedCount, responsesCompletedCount, streak, sphereCompleted, badgesEarned, fullBadgesEarned } =
     await getHomeProgress()
   const overallPct = Math.round((completedCount / TOTAL_DEVOTIONS) * 100)
@@ -116,32 +121,11 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Stats Bento */}
-      <section className="relative z-10 mx-auto max-w-[1400px] -mt-12 px-6 pb-24 sm:px-8">
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { icon: '📚', value: String(completedCount), label: 'Watched' },
-            { icon: '🔥', value: String(streak), label: 'Day Streak' },
-            { icon: '✨', value: String(responsesCompletedCount), label: 'Full Completions' },
-            { icon: '⭐', value: `${overallPct}%`, label: 'Overall Progress' },
-          ].map((stat) => (
-            <div
-              key={stat.label}
-              className="relative overflow-hidden rounded-3xl border border-white/20 bg-white/70 p-8 shadow-glass transition-all duration-300 hover:-translate-y-2 hover:shadow-glass-hover"
-            >
-              <div className="absolute left-0 top-0 h-1 w-full origin-left scale-x-0 bg-gradient-to-r from-education to-media transition-transform duration-300 group-hover:scale-x-100" />
-              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-education to-media text-3xl">
-                {stat.icon}
-              </div>
-              <div className="font-heading text-4xl font-bold text-text-primary">{stat.value}</div>
-              <div className="text-sm font-medium text-text-secondary">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* Search by topic */}
+      <SearchSection isLoggedIn={isLoggedIn} />
 
       {/* Foundational + 7 Spheres Bento */}
-      <section id="spheres" className="mx-auto max-w-[1400px] px-6 pb-24 sm:px-8">
+      <section id="spheres" className="mx-auto max-w-[1400px] px-6 pb-24 pt-4 sm:px-8">
         <div className="mb-16 text-center">
           <h2 className="font-heading text-[clamp(2.5rem,5vw,4rem)] font-bold tracking-tight text-text-primary">
             Foundational Worldview + 7 Spheres

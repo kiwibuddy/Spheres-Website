@@ -92,6 +92,22 @@ export default async function DevotionPage({ params }: PageProps) {
           </div>
         </div>
 
+        {devotion.transcript?.trim() ? (
+          <section className="mt-10 rounded-2xl border border-white/20 bg-white/70 p-6 shadow-glass sm:p-8" aria-labelledby="transcript-heading">
+            <h2 id="transcript-heading" className="font-heading text-xl font-bold text-text-primary">
+              Transcript
+            </h2>
+            <p className="mt-1 text-sm text-text-secondary">
+              Key passage transcript from the video.
+            </p>
+            <div className="mt-4 max-h-[400px] overflow-y-auto rounded-xl border border-white/20 bg-white/50 p-4">
+              <p className="whitespace-pre-wrap text-sm leading-relaxed text-text-primary">
+                {devotion.transcript.trim()}
+              </p>
+            </div>
+          </section>
+        ) : null}
+
         <section className="mt-10 rounded-2xl border border-white/20 bg-white/70 p-8" aria-labelledby="reflection-heading">
           <h2 id="reflection-heading" className="font-heading text-xl font-bold text-text-primary">
             Reflection questions

@@ -10,9 +10,16 @@
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "seed": "node scripts/seed-supabase.mjs",
-    "generate-devotions": "node scripts/generate-devotions.mjs"
+    "generate-devotions": "node scripts/generate-devotions.mjs",
+    "extract-transcripts": "node scripts/extract-transcripts-from-pdfs.mjs",
+    "validate-transcripts": "node scripts/validate-transcripts.mjs",
+    "merge-transcripts": "node scripts/merge-transcripts-into-devotions.mjs",
+    "transcripts:full": "npm run extract-transcripts && npm run validate-transcripts && npm run merge-transcripts",
+    "backfill-embeddings": "node scripts/backfill-embeddings.mjs",
+    "db:migrate-pgvector": "node scripts/run-pgvector-migration.mjs"
   },
   "dependencies": {
+    "openai": "^4.77.0",
     "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
@@ -32,6 +39,8 @@
     "zod": "^3.23.0"
   },
   "devDependencies": {
+    "pg": "^8.13.0",
+    "pdf-parse": "^1.1.1",
     "@types/node": "^20.0.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",

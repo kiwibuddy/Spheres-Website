@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Education Sphere - Visual Overview</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght:400;600;700&family=Space+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Crimson Pro', serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #e8e8e8;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* Header */
+        header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            margin-bottom: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #6a4c93, #8b5cf6, #6a4c93);
+        }
+        
+        h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #8b5cf6;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 8px rgba(139, 92, 246, 0.3);
+            letter-spacing: -1px;
+        }
+        
+        .subtitle {
+            font-size: 1.4rem;
+            color: #a7c5e3;
+            font-weight: 400;
+            font-family: 'Space Mono', monospace;
+            margin-bottom: 20px;
+        }
+        
+        .series-context {
+            display: inline-block;
+            background: rgba(139, 92, 246, 0.15);
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            color: #d1d1d1;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            margin-top: 15px;
+        }
+        
+        /* Navigation Pills */
+        .sphere-nav {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+        
+        .sphere-pill {
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-family: 'Space Mono', monospace;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: #a7c5e3;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .sphere-pill.active {
+            background: rgba(139, 92, 246, 0.3);
+            border-color: #8b5cf6;
+            color: #8b5cf6;
+            font-weight: 700;
+        }
+        
+        .sphere-pill:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Stats Dashboard */
+        .overview-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin-bottom: 60px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #8b5cf6, transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+        
+        .stat-card:hover::before {
+            transform: translateX(100%);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #8b5cf6;
+        }
+        
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #8b5cf6;
+            font-family: 'Space Mono', monospace;
+            line-height: 1;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: #a7c5e3;
+            margin-top: 12px;
+        }
+        
+        .stat-sublabel {
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        /* Section Styling */
+        .section {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h2 {
+            font-size: 2.2rem;
+            color: #8b5cf6;
+            margin-bottom: 30px;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(139, 92, 246, 0.3);
+            padding-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        h2::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #8b5cf6;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+        }
+        
+        h3 {
+            font-size: 1.5rem;
+            color: #a7c5e3;
+            margin-bottom: 20px;
+        }
+        
+        /* Theme Structure Visualization */
+        .structure-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .structure-section {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(167, 197, 227, 0.08) 100%);
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 4px solid #8b5cf6;
+            transition: all 0.3s ease;
+        }
+        
+        .structure-section:hover {
+            transform: translateX(10px);
+            border-left-width: 6px;
+        }
+        
+        .structure-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .structure-title {
+            font-size: 1.3rem;
+            color: #8b5cf6;
+            font-weight: 600;
+        }
+        
+        .structure-count {
+            font-family: 'Space Mono', monospace;
+            color: #a7c5e3;
+            font-size: 1.1rem;
+            background: rgba(139, 92, 246, 0.15);
+            padding: 5px 15px;
+            border-radius: 15px;
+        }
+        
+        .structure-topics {
+            color: #d1d1d1;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+        
+        /* Word Cloud */
+        .word-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            padding: 30px;
+            min-height: 350px;
+            align-items: center;
+        }
+        
+        .word {
+            padding: 10px 18px;
+            background: rgba(139, 92, 246, 0.12);
+            border-radius: 25px;
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            transition: all 0.3s ease;
+            cursor: default;
+            animation: fadeInUp 0.6s ease backwards;
+            position: relative;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .word:hover {
+            background: rgba(139, 92, 246, 0.25);
+            transform: scale(1.1);
+            border-color: #8b5cf6;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+        
+        .word::after {
+            content: attr(data-category);
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: #888;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .word:hover::after {
+            opacity: 1;
+        }
+        
+        /* Charts */
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 30px 0;
+        }
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 40px;
+            margin-top: 30px;
+        }
+        
+        /* Key Insights */
+        .insights-grid {
+            display: grid;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .insight-card {
+            background: rgba(167, 197, 227, 0.08);
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 5px solid #8b5cf6;
+            transition: all 0.3s ease;
+        }
+        
+        .insight-card:hover {
+            background: rgba(167, 197, 227, 0.12);
+            transform: translateX(10px);
+            border-left-width: 8px;
+        }
+        
+        .insight-number {
+            display: inline-block;
+            width: 35px;
+            height: 35px;
+            background: #8b5cf6;
+            color: #1a1a2e;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: 700;
+            margin-right: 15px;
+            font-family: 'Space Mono', monospace;
+        }
+        
+        .insight-title {
+            font-size: 1.4rem;
+            color: #8b5cf6;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .insight-text {
+            color: #d1d1d1;
+            line-height: 1.9;
+            font-size: 1.05rem;
+        }
+        
+        /* Cross-Sphere Connections */
+        .crossover-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .crossover-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(167, 197, 227, 0.1) 100%);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .crossover-card:hover {
+            transform: translateY(-5px);
+            border-color: #8b5cf6;
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+        }
+        
+        .crossover-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .crossover-title {
+            font-size: 1.1rem;
+            color: #8b5cf6;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .crossover-ref {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            color: #a7c5e3;
+        }
+        
+        /* Testament Comparison */
+        .testament-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 30px;
+        }
+        
+        .testament-card {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Biblical Books Tags */
+        .books-section {
+            margin-top: 30px;
+        }
+        
+        .testament-group {
+            margin-bottom: 30px;
+        }
+        
+        .testament-label {
+            color: #a7c5e3;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .books-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .book-tag {
+            background: rgba(139, 92, 246, 0.15);
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .book-tag:hover {
+            background: rgba(139, 92, 246, 0.25);
+            transform: scale(1.05);
+        }
+        
+        .book-count {
+            color: #8b5cf6;
+            font-weight: 700;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .testament-comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .crossover-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .sphere-nav {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Education Sphere</h1>
+            <p class="subtitle">52 Key Biblical Passages on Transformative Education</p>
+            <div class="series-context">
+                Part of 7 Spheres • 364 Total Passages • Discipling Nations
+            </div>
+            
+            <div class="sphere-nav">
+                <div class="sphere-pill">Foundation</div>
+                <div class="sphere-pill">Family</div>
+                <div class="sphere-pill">Economics</div>
+                <div class="sphere-pill">Government</div>
+                <div class="sphere-pill">Religion</div>
+                <div class="sphere-pill active">Education</div>
+                <div class="sphere-pill">Media</div>
+                <div class="sphere-pill">Celebration</div>
+            </div>
+        </header>
+        
+        <!-- Quick Stats -->
+        <div class="overview-stats">
+            <div class="stat-card">
+                <div class="stat-number">52</div>
+                <div class="stat-label">Passages</div>
+                <div class="stat-sublabel">14.3% of series</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">31</div>
+                <div class="stat-label">Biblical Books</div>
+                <div class="stat-sublabel">17 OT, 14 NT</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">7</div>
+                <div class="stat-label">Major Themes</div>
+                <div class="stat-sublabel">+ 6 crossovers</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">29</div>
+                <div class="stat-label">Old Testament</div>
+                <div class="stat-sublabel">56% OT focus</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">23</div>
+                <div class="stat-label">New Testament</div>
+                <div class="stat-sublabel">44% NT focus</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">6</div>
+                <div class="stat-label">Sphere Links</div>
+                <div class="stat-sublabel">Integrated system</div>
+            </div>
+        </div>
+        
+        <!-- Content Structure -->
+        <div class="section">
+            <h2>Content Structure & Flow</h2>
+            <p style="color: #d1d1d1; margin-bottom: 25px; font-size: 1.05rem;">
+                The Education Sphere follows a comprehensive progression from God as teacher to transformation 
+                of individuals and societies through biblical education principles.
+            </p>
+            
+            <div class="structure-flow">
+                <div class="structure-section">
+                    <div class="structure-header">
+                        <div class="structure-title">I. God & Education</div>
+                        <div class="structure-count">6 passages</div>
+                    </div>
+                    <div class="structure-topics">
+                        God Reveals Relationally • Father as Teacher • Son as Teacher • 
+                        Holy Spirit as Teacher • God the Warrior • God the Shepherd
+                    </div>
+                </div>
+                
+                <div class="structure-section">
+                    <div class="structure-header">
+                        <div class="structure-title">II. Goals & Purposes</div>
+                        <div class="structure-count">7 passages</div>
+                    </div>
+                    <div class="structure-topics">
+                        Practical Wisdom • Transformation Goal • Societal Blessing • 
+                        Transformed Lives • Transformed Society • Potter's House Revelation
+                    </div>
+                </div>
+                
+                <div class="structure-section">
+                    <div class="structure-header">
+                        <div class="structure-title">III. Guidelines for Teachers</div>
+                        <div class="structure-count">8 passages</div>
+                    </div>
+                    <div class="structure-topics">
+                        Study-Obey-Teach • Teach Well • Spirit & Truth • Know Your Audience • 
+                        Didactic Creativity • Cohortive Context • Pray for Students • Higher Standard
+                    </div>
+                </div>
+                
+                <div class="structure-section">
+                    <div class="structure-header">
+                        <div class="structure-title">IV. Guidelines for Students</div>
+                        <div class="structure-count">8 passages</div>
+                    </div>
+                    <div class="structure-topics">
+                        Imitate the Master • Consider Jesus • Hunger for God's Word • 
+                        Faith-Based Learning • Think Deeply • Apply Truth • Teachableness • Persevere
+                    </div>
+                </div>
+                
+                <div class="structure-section">
+                    <div class="structure-header">
+                        <div class="structure-title">V. Principles & Practices</div>
+                        <div class="structure-count">11 passages</div>
+                    </div>
+                    <div class="structure-topics">
+                        Begin with Revelation • Question-Asking • Critical Thinking • 
+                        Guard Your Heart • Love Good/Hate Evil • Faith-Virtue-Knowledge • 
+                        Family-Church-School Roles • Support Teachers
+                    </div>
+                </div>
+                
+                <div class="structure-section">
+                    <div class="structure-header">
+                        <div class="structure-title">VI. Bloom's Taxonomy</div>
+                        <div class="structure-count">6 passages</div>
+                    </div>
+                    <div class="structure-topics">
+                        Remembering • Understanding • Applying • 
+                        Analyzing • Evaluating • Creating
+                    </div>
+                </div>
+                
+                <div class="structure-section" style="border-left-color: #c084fc;">
+                    <div class="structure-header">
+                        <div class="structure-title">VII. Crossovers</div>
+                        <div class="structure-count">6 passages</div>
+                    </div>
+                    <div class="structure-topics">
+                        Integration with Family • Economics • Government • Religion • 
+                        Media/Communication • Celebration
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Word Cloud -->
+        <div class="section">
+            <h2>Conceptual Landscape</h2>
+            <p style="color: #d1d1d1; margin-bottom: 25px; font-size: 1.05rem;">
+                Most frequently occurring concepts across all 52 passages, sized by frequency of mention.
+            </p>
+            <div class="word-cloud" id="wordCloud"></div>
+        </div>
+        
+        <!-- Testament & Book Distribution -->
+        <div class="section">
+            <h2>Biblical Foundation</h2>
+            <div class="chart-grid">
+                <div>
+                    <h3>Testament Balance</h3>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="testamentChart"></canvas>
+                    </div>
+                </div>
+                <div>
+                    <h3>Top Biblical Books</h3>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="booksChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="books-section">
+                <div class="testament-group">
+                    <span class="testament-label">OLD TESTAMENT (17 books, 29 passages)</span>
+                    <div class="books-grid">
+                        <div class="book-tag">Deuteronomy <span class="book-count">6</span></div>
+                        <div class="book-tag">Proverbs <span class="book-count">5</span></div>
+                        <div class="book-tag">Exodus <span class="book-count">3</span></div>
+                        <div class="book-tag">Leviticus <span class="book-count">3</span></div>
+                        <div class="book-tag">Psalms <span class="book-count">3</span></div>
+                        <div class="book-tag">Genesis <span class="book-count">2</span></div>
+                        <div class="book-tag">2 Kings <span class="book-count">2</span></div>
+                        <div class="book-tag">Numbers <span class="book-count">2</span></div>
+                        <div class="book-tag">1 Chronicles <span class="book-count">1</span></div>
+                        <div class="book-tag">Nehemiah <span class="book-count">1</span></div>
+                        <div class="book-tag">Job <span class="book-count">1</span></div>
+                        <div class="book-tag">Isaiah <span class="book-count">1</span></div>
+                        <div class="book-tag">Jeremiah <span class="book-count">1</span></div>
+                        <div class="book-tag">Ezra <span class="book-count">1</span></div>
+                        <div class="book-tag">Jonah <span class="book-count">1</span></div>
+                        <div class="book-tag">Haggai <span class="book-count">1</span></div>
+                        <div class="book-tag">Hosea <span class="book-count">1</span></div>
+                    </div>
+                </div>
+                
+                <div class="testament-group">
+                    <span class="testament-label">NEW TESTAMENT (14 books, 23 passages)</span>
+                    <div class="books-grid">
+                        <div class="book-tag">John <span class="book-count">4</span></div>
+                        <div class="book-tag">Matthew <span class="book-count">3</span></div>
+                        <div class="book-tag">Mark <span class="book-count">3</span></div>
+                        <div class="book-tag">Luke <span class="book-count">3</span></div>
+                        <div class="book-tag">Acts <span class="book-count">2</span></div>
+                        <div class="book-tag">Ephesians <span class="book-count">2</span></div>
+                        <div class="book-tag">1 Timothy <span class="book-count">1</span></div>
+                        <div class="book-tag">Romans <span class="book-count">1</span></div>
+                        <div class="book-tag">1 Corinthians <span class="book-count">1</span></div>
+                        <div class="book-tag">Philippians <span class="book-count">1</span></div>
+                        <div class="book-tag">2 Peter <span class="book-count">1</span></div>
+                        <div class="book-tag">James <span class="book-count">1</span></div>
+                        <div class="book-tag">Hebrews <span class="book-count">1</span></div>
+                        <div class="book-tag">3 John <span class="book-count">1</span></div>
+                        <div class="book-tag">Titus <span class="book-count">1</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Social Issues -->
+        <div class="section">
+            <h2>Contemporary Relevance</h2>
+            <p style="color: #d1d1d1; margin-bottom: 25px; font-size: 1.05rem;">
+                Modern educational issues addressed throughout the 52 passages, rated by frequency and emphasis.
+            </p>
+            <div class="chart-container">
+                <canvas id="issuesChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Key Insights -->
+        <div class="section">
+            <h2>Core Principles & Insights</h2>
+            <p style="color: #d1d1d1; margin-bottom: 25px; font-size: 1.05rem;">
+                Seven foundational principles that emerge from studying these 52 passages together.
+            </p>
+            
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <div class="insight-title">
+                        <span class="insight-number">1</span>
+                        Relational Revelation Model
+                    </div>
+                    <div class="insight-text">
+                        God reveals truth relationally, not systematically. He tailors His curriculum to individual 
+                        circumstances and needs. To Abraham (impotent), God revealed "El Shaddai" (All-Potent One, 
+                        nursing breasts). To Moses (quick to anger), God revealed "slow to anger, abounding in loving 
+                        kindness." To David (shepherd), God said "I am your Shepherd." True education adapts to the 
+                        learner's context, meeting them where they are, not forcing predetermined curricula.
+                    </div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-title">
+                        <span class="insight-number">2</span>
+                        Transformation Over Transaction
+                    </div>
+                    <div class="insight-text">
+                        The goal of education is not information accumulation but life transformation. "Study → Obey → 
+                        Teach" (Ezra 7:10-11) shows the proper sequence. Peter and John were recognized as men "who 
+                        had been with Jesus" (Acts 4:13)—their lives, not just their words, bore testimony. Education 
+                        must integrate head (knowledge), heart (character), and hands (skills). The University of the 
+                        Nations requires Discipleship Training School before academic study because character 
+                        development precedes knowledge acquisition (2 Peter 1:5-8: "to faith add virtue, and to virtue 
+                        knowledge").
+                    </div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-title">
+                        <span class="insight-number">3</span>
+                        Trinity as Teacher
+                    </div>
+                    <div class="insight-text">
+                        All three Persons of the Godhead teach: The Father teaches (Isaiah 54:13), bringing shalom 
+                        (peace, wholeness, flourishing). The Son teaches through modeling servanthood (John 13—foot 
+                        washing transforms worldviews). The Holy Spirit teaches by reminding us of Jesus' words and 
+                        guiding into all truth (John 14:26, 16:13). God the Warrior teaches us for spiritual battle 
+                        (Psalm 27—ideas have consequences; 12,000-30,000 hours in school vs 1,200-4,600 in church). 
+                        God the Shepherd teaches as an act of compassion (Mark 6:34—teaching is mercy ministry).
+                    </div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-title">
+                        <span class="insight-number">4</span>
+                        Question-Asking Methodology
+                    </div>
+                    <div class="insight-text">
+                        Jesus asked 315 questions in the Gospels; 200 were open-ended (not yes/no). He never taught 
+                        without modeling question-asking. Job asked 125 questions; God responded with 75 more questions, 
+                        saying "keep thinking deeper." Abraham's "suppose...suppose...suppose" dialogue (Genesis 18) 
+                        demonstrates implicational thinking—following threads to their conclusions. Good education 
+                        cultivates curiosity, not compliance. Questions like "who/what/when/where/why/how/with what 
+                        result?" unlock understanding. This stands against educational systems that punish 
+                        question-asking or demand rote memorization without critical thinking.
+                    </div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-title">
+                        <span class="insight-number">5</span>
+                        Bloom's Taxonomy in Scripture
+                    </div>
+                    <div class="insight-text">
+                        The six levels of learning are biblically grounded: (1) Remembering—never forget Mount Sinai 
+                        (Deut 4:10); (2) Understanding—think carefully about temple foundation (Haggai 2:18); (3) 
+                        Applying—husbands teach wives at home (1 Cor 14:35—revolutionary gender equality); (4) 
+                        Analyzing—you spoke accurately, they did not (Job 42:7); (5) Evaluating—daughters of 
+                        Zelophehad case law (Numbers 36—working out justice across generations); (6) Creating—sing 
+                        a NEW song (Psalm 98—fresh revelation produces fresh creativity). Education culminates in 
+                        creative contributions, not cookie-cutter conformity.
+                    </div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-title">
+                        <span class="insight-number">6</span>
+                        Family-Church-School Integration
+                    </div>
+                    <div class="insight-text">
+                        Family holds primary authority for children's education (Deut 11:19—teach at home, on road, 
+                        bedtime, waking). Church (family of God) extends this through discipleship (Acts 19:9-10—Paul 
+                        taught daily for two years in Ephesus). School supports but doesn't replace (1 Chron 27:32—
+                        Jehiel taught king's sons). These spheres must collaborate, not compete. Current crisis: 
+                        secular education systems usurp parental authority while churches abdicate educational 
+                        responsibility. Biblical model: family delegates to church/school while retaining oversight 
+                        and primary responsibility.
+                    </div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-title">
+                        <span class="insight-number">7</span>
+                        Teacher as Servant
+                    </div>
+                    <div class="insight-text">
+                        Teachers serve students by adapting methodology to learning styles (visual, auditory, 
+                        kinesthetic). Moses learned through staff-to-snake, leprosy-to-healing—multi-sensory teaching 
+                        (Exodus 4). Jesus taught crowds with parables, disciples with explanations (Mark 4:33-34). 
+                        Mark knew his Roman audience needed cultural context; Matthew knew Jewish audience didn't 
+                        (Mark 7:2-4 vs Matt 15). "Teaching For Life" flower exercise: crushing all flowers into 
+                        sameness destroys beauty—honor each student's unique design. Teachers judged by higher 
+                        standard (James 3:1) because they shape generations. Urgent need: millions must enter teaching 
+                        vocation to win battle for hearts/minds.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cross-Sphere Integration -->
+        <div class="section">
+            <h2>Integration with Other Spheres</h2>
+            <p style="color: #d1d1d1; margin-bottom: 25px; font-size: 1.05rem;">
+                The final six passages demonstrate how education intersects with and must collaborate with all other spheres of society.
+            </p>
+            
+            <div class="crossover-grid">
+                <div class="crossover-card">
+                    <div class="crossover-icon">👨‍👩‍👧‍👦</div>
+                    <div class="crossover-title">Family</div>
+                    <div class="crossover-ref">Deuteronomy 11:19</div>
+                    <p style="color: #d1d1d1; font-size: 0.9rem; margin-top: 10px;">
+                        Teach children at home, on road, bedtime, waking—family primacy
+                    </p>
+                </div>
+                
+                <div class="crossover-card">
+                    <div class="crossover-icon">💼</div>
+                    <div class="crossover-title">Economics</div>
+                    <div class="crossover-ref">Titus 1:11</div>
+                    <p style="color: #d1d1d1; font-size: 0.9rem; margin-top: 10px;">
+                        False teachers for dishonest gain—corrupt content & processes
+                    </p>
+                </div>
+                
+                <div class="crossover-card">
+                    <div class="crossover-icon">🏛️</div>
+                    <div class="crossover-title">Government</div>
+                    <div class="crossover-ref">2 Kings 12:2</div>
+                    <p style="color: #d1d1d1; font-size: 0.9rem; margin-top: 10px;">
+                        Joash did right because priest instructed him—religion educates govt
+                    </p>
+                </div>
+                
+                <div class="crossover-card">
+                    <div class="crossover-icon">✝️</div>
+                    <div class="crossover-title">Religion</div>
+                    <div class="crossover-ref">Nehemiah 8:2-3,7-8</div>
+                    <p style="color: #d1d1d1; font-size: 0.9rem; margin-top: 10px;">
+                        Ezra read, Levites explained—religion-education partnership
+                    </p>
+                </div>
+                
+                <div class="crossover-card">
+                    <div class="crossover-icon">📢</div>
+                    <div class="crossover-title">Media/Communication</div>
+                    <div class="crossover-ref">Mark 4:33-34</div>
+                    <p style="color: #d1d1d1; font-size: 0.9rem; margin-top: 10px;">
+                        Jesus used parables publicly, explained privately—media serves education
+                    </p>
+                </div>
+                
+                <div class="crossover-card">
+                    <div class="crossover-icon">🎭</div>
+                    <div class="crossover-title">Celebration</div>
+                    <div class="crossover-ref">Psalm 60:title</div>
+                    <p style="color: #d1d1d1; font-size: 0.9rem; margin-top: 10px;">
+                        "Useful for teaching"—arts communicate deepest truths effectively
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Word Cloud Data with Categories
+        const words = [
+            { text: 'God/Lord', size: 50, count: 95, category: 'theological', delay: 0 },
+            { text: 'Teach/Teaching', size: 48, count: 78, category: 'action', delay: 0.05 },
+            { text: 'Education', size: 46, count: 52, category: 'sphere', delay: 0.1 },
+            { text: 'Learn/Learning', size: 44, count: 45, category: 'action', delay: 0.15 },
+            { text: 'Knowledge/Wisdom', size: 42, count: 42, category: 'concept', delay: 0.2 },
+            { text: 'Truth', size: 42, count: 38, category: 'concept', delay: 0.25 },
+            { text: 'Student/Children', size: 40, count: 35, category: 'role', delay: 0.3 },
+            { text: 'Heart', size: 40, count: 32, category: 'concept', delay: 0.35 },
+            { text: 'Understanding', size: 38, count: 28, category: 'concept', delay: 0.4 },
+            { text: 'Question/Asking', size: 38, count: 24, category: 'method', delay: 0.45 },
+            { text: 'Transformation', size: 36, count: 22, category: 'goal', delay: 0.5 },
+            { text: 'Family', size: 36, count: 18, category: 'sphere', delay: 0.55 },
+            { text: 'Spirit', size: 34, count: 16, category: 'theological', delay: 0.6 },
+            { text: 'Jesus', size: 34, count: 15, category: 'theological', delay: 0.65 },
+            { text: 'Discipleship', size: 34, count: 14, category: 'method', delay: 0.7 },
+            { text: 'Curriculum', size: 32, count: 12, category: 'method', delay: 0.75 },
+            { text: 'School', size: 32, count: 11, category: 'institution', delay: 0.8 },
+            { text: 'Creativity', size: 30, count: 10, category: 'goal', delay: 0.85 },
+            { text: 'Teacher', size: 30, count: 22, category: 'role', delay: 0.9 },
+            { text: 'Obey', size: 28, count: 16, category: 'action', delay: 0.95 },
+            { text: 'Relational', size: 28, count: 14, category: 'method', delay: 1.0 },
+            { text: 'Character', size: 28, count: 13, category: 'goal', delay: 1.05 },
+            { text: 'Apply', size: 26, count: 11, category: 'action', delay: 1.1 },
+            { text: 'Critical Thinking', size: 26, count: 10, category: 'method', delay: 1.15 }
+        ];
+        
+        const wordCloud = document.getElementById('wordCloud');
+        words.forEach((word, index) => {
+            const span = document.createElement('span');
+            span.className = 'word';
+            span.textContent = `${word.text} (${word.count})`;
+            span.style.fontSize = `${word.size}px`;
+            span.style.animationDelay = `${word.delay}s`;
+            span.setAttribute('data-category', word.category);
+            wordCloud.appendChild(span);
+        });
+        
+        // Testament Balance Chart
+        const testamentCtx = document.getElementById('testamentChart').getContext('2d');
+        new Chart(testamentCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Old Testament', 'New Testament'],
+                datasets: [{
+                    data: [29, 23],
+                    backgroundColor: [
+                        'rgba(139, 92, 246, 0.8)',
+                        'rgba(167, 197, 227, 0.8)'
+                    ],
+                    borderColor: ['rgba(139, 92, 246, 1)', 'rgba(167, 197, 227, 1)'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { 
+                            color: '#e8e8e8', 
+                            font: { size: 14 },
+                            padding: 20
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(26, 26, 46, 0.95)',
+                        titleColor: '#8b5cf6',
+                        bodyColor: '#e8e8e8',
+                        borderColor: 'rgba(139, 92, 246, 0.5)',
+                        borderWidth: 1,
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return `${context.label}: ${context.parsed} passages (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Top Biblical Books Chart
+        const booksCtx = document.getElementById('booksChart').getContext('2d');
+        new Chart(booksCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Deuteronomy', 'Proverbs', 'John', 'Exodus', 'Leviticus', 'Psalms', 'Matthew', 'Mark'],
+                datasets: [{
+                    label: 'Passages',
+                    data: [6, 5, 4, 3, 3, 3, 3, 3],
+                    backgroundColor: 'rgba(139, 92, 246, 0.7)',
+                    borderColor: 'rgba(139, 92, 246, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(26, 26, 46, 0.95)',
+                        titleColor: '#8b5cf6',
+                        bodyColor: '#e8e8e8',
+                        borderColor: 'rgba(139, 92, 246, 0.5)',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: { color: '#a7c5e3' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    },
+                    y: {
+                        ticks: { color: '#a7c5e3' },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+        
+        // Social Issues Chart
+        const issuesCtx = document.getElementById('issuesChart').getContext('2d');
+        new Chart(issuesCtx, {
+            type: 'radar',
+            data: {
+                labels: [
+                    'Family vs State in Education',
+                    'Critical Thinking & Discernment',
+                    'Character vs Knowledge',
+                    'Teaching Vocation Crisis',
+                    'Gender Equality in Education',
+                    'Collaborative vs Competitive',
+                    'Holistic Development',
+                    'Educational Accessibility'
+                ],
+                datasets: [{
+                    label: 'Emphasis Rating',
+                    data: [16, 14, 18, 12, 6, 10, 15, 8],
+                    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                    borderColor: 'rgba(139, 92, 246, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#8b5cf6',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#8b5cf6',
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(26, 26, 46, 0.95)',
+                        titleColor: '#8b5cf6',
+                        bodyColor: '#e8e8e8',
+                        borderColor: 'rgba(139, 92, 246, 0.5)',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 20,
+                        ticks: { 
+                            color: '#a7c5e3',
+                            backdropColor: 'transparent',
+                            stepSize: 5
+                        },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        pointLabels: { 
+                            color: '#a7c5e3',
+                            font: { size: 13 }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
