@@ -21,7 +21,7 @@ export function NavigationStatic() {
       <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 sm:px-8">
         <Link
           href="/"
-          className="flex items-center gap-4 font-heading text-2xl font-bold tracking-tight text-text-primary"
+          className="flex items-center gap-2 font-heading text-2xl font-bold tracking-tight text-text-primary"
         >
           <Image
             src="/logo.png"
