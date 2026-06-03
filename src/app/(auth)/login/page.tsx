@@ -7,6 +7,8 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/client'
+import { signInWithPasswordAction } from '@/lib/auth/actions'
+import { AuthGoogleButton, AuthDivider } from '@/components/features/AuthGoogleButton'
 
 const schema = z.object({
   email: z.string().email('Invalid email'),
@@ -19,7 +21,10 @@ function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirect') || '/dashboard'
-  const [error, setError] = useState<string | null>(null)
+  const authError = searchParams.get('error') === 'auth'
+  const [error, setError] = useState<string | null>(
+    authError ? 'Google sign-in failed. Please try again or use email.' : null
+  )
   const {
     register,
     handleSubmit,
@@ -29,31 +34,22 @@ function LoginForm() {
   useEffect(() => {
     const supabase = createClient()
     if (!supabase) return
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        router.replace(redirectTo.startsWith('/') ? redirectTo : '/dashboard')
-      }
-    })
+    supabase.auth
+      .getSession()
+      .then(({ data: { session } }) => {
+        if (session) {
+          router.replace(redirectTo.startsWith('/') ? redirectTo : '/dashboard')
+        }
+      })
+      .catch(() => {
+        // Session check is optional; server action handles sign-in
+      })
   }, [router, redirectTo])
 
   async function onSubmit(data: FormData) {
     setError(null)
-    try {
-      const supabase = createClient()
-      if (!supabase) {
-        setError('Sign-in is not configured. In Vercel: Project → Settings → Environment Variables, add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY, then redeploy.')
-        return
-      }
-      const { error: signInError } = await supabase.auth.signInWithPassword({ email: data.email, password: data.password })
-      if (signInError) {
-        setError(signInError.message)
-        return
-      }
-      router.push(redirectTo.startsWith('/') ? redirectTo : '/dashboard')
-      router.refresh()
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Something went wrong')
-    }
+    const result = await signInWithPasswordAction(data.email, data.password, redirectTo)
+    if (result?.error) setError(result.error)
   }
 
   return (
@@ -61,7 +57,13 @@ function LoginForm() {
       <div className="w-full max-w-md rounded-3xl border border-white/20 bg-white/70 p-8 shadow-glass">
         <h1 className="font-heading text-2xl font-bold text-text-primary">Sign in</h1>
         <p className="mt-1 text-sm text-text-secondary">Access your progress and devotions</p>
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
+
+        <div className="mt-8">
+          <AuthGoogleButton redirectTo={redirectTo} />
+        </div>
+        <AuthDivider />
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {error && (
             <div className="rounded-lg bg-red-100 px-4 py-3 text-sm text-red-800" role="alert">
               {error}

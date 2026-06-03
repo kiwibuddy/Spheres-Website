@@ -7,6 +7,8 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/client'
+import { signUpWithPasswordAction } from '@/lib/auth/actions'
+import { AuthGoogleButton, AuthDivider } from '@/components/features/AuthGoogleButton'
 
 const schema = z
   .object({
@@ -21,7 +23,7 @@ type FormData = z.infer<typeof schema>
 export default function SignupPage() {
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const {
     register,
     handleSubmit,
@@ -31,37 +33,32 @@ export default function SignupPage() {
   useEffect(() => {
     const supabase = createClient()
     if (!supabase) return
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) router.replace('/dashboard')
-    })
+    supabase.auth
+      .getSession()
+      .then(({ data: { session } }) => {
+        if (session) router.replace('/dashboard')
+      })
+      .catch(() => {})
   }, [router])
 
   async function onSubmit(data: FormData) {
     setError(null)
-    try {
-      const supabase = createClient()
-      if (!supabase) {
-        setError('Sign-up is not configured. In Vercel: Project → Settings → Environment Variables, add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY, then redeploy.')
-        return
-      }
-      const { error: signUpError } = await supabase.auth.signUp({ email: data.email, password: data.password })
-      if (signUpError) {
-        setError(signUpError.message)
-        return
-      }
-      setSuccess(true)
-      router.push('/dashboard')
-      router.refresh()
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Something went wrong')
+    setSuccessMessage(null)
+    const result = await signUpWithPasswordAction(data.email, data.password)
+    if (result?.error) {
+      setError(result.error)
+      return
+    }
+    if (result?.success && result.message) {
+      setSuccessMessage(result.message)
     }
   }
 
-  if (success) {
+  if (successMessage) {
     return (
       <div className="flex min-h-screen items-center justify-center px-6">
-        <div className="rounded-3xl border border-white/20 bg-white/70 p-8 text-center shadow-glass">
-          <p className="text-text-primary">Check your email to confirm your account.</p>
+        <div className="w-full max-w-md rounded-3xl border border-white/20 bg-white/70 p-8 text-center shadow-glass">
+          <p className="text-text-primary">{successMessage}</p>
           <Link href="/login" className="mt-4 inline-block font-medium text-education hover:underline">
             Back to sign in
           </Link>
@@ -75,7 +72,13 @@ export default function SignupPage() {
       <div className="w-full max-w-md rounded-3xl border border-white/20 bg-white/70 p-8 shadow-glass">
         <h1 className="font-heading text-2xl font-bold text-text-primary">Create account</h1>
         <p className="mt-1 text-sm text-text-secondary">Start your journey through 416 devotions</p>
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
+
+        <div className="mt-8">
+          <AuthGoogleButton redirectTo="/dashboard" />
+        </div>
+        <AuthDivider />
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {error && (
             <div className="rounded-lg bg-red-100 px-4 py-3 text-sm text-red-800" role="alert">
               {error}

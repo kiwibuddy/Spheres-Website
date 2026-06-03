@@ -75,15 +75,29 @@ You should see something like: `Upserting spheres...` then `Upserting devotions.
 
 ---
 
-## 6. (Optional) Turn on Email auth
+## 6. Configure auth URLs and providers
 
-If you want sign-up with email/password:
+### Email sign-up (default)
 
-1. In Supabase: **Authentication** → **Providers**.
-2. **Email** should be enabled by default.
-3. Under **Authentication** → **URL Configuration**, set **Site URL** to your app URL when you deploy (e.g. `https://yourdomain.com`). For local dev you can leave it or set `http://localhost:3000`.
+1. In Supabase: **Authentication** → **Providers** — **Email** should be enabled.
+2. Under **Authentication** → **URL Configuration**, set:
+   - **Site URL:** `https://spheres-website.vercel.app` (or your custom domain)
+   - **Redirect URLs:** add both:
+     - `https://spheres-website.vercel.app/auth/callback`
+     - `http://localhost:3000/auth/callback`
 
-For local testing, sign-up and login work without changing anything else.
+For local testing, sign-up and login work with `http://localhost:3000` as Site URL.
+
+### Google sign-in (recommended)
+
+1. In Supabase: **Authentication** → **Providers** → **Google** → Enable.
+2. Create OAuth credentials in [Google Cloud Console](https://console.cloud.google.com/apis/credentials):
+   - Application type: **Web application**
+   - **Authorized redirect URI:** copy from Supabase Google provider settings (looks like `https://xxxxxxxx.supabase.co/auth/v1/callback`)
+3. Paste **Client ID** and **Client Secret** into Supabase Google provider settings.
+4. Confirm **Redirect URLs** in step above include `/auth/callback` on your domain.
+
+Optional: set `NEXT_PUBLIC_SITE_URL=https://spheres-website.vercel.app` in Vercel env vars so OAuth redirects always use the correct domain.
 
 ---
 
