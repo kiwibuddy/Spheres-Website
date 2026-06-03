@@ -4,21 +4,10 @@ import { getCompletedCount, getResponsesCompletedCount, getSphereProgress, getSt
 import { SPHERES, ACHIEVEMENT_BADGES, FULL_COMPLETION_BADGES, TOTAL_DEVOTIONS, DEVOTIONS_PER_SPHERE, SPHERE_INTROS } from '@/lib/constants'
 import { SearchSection } from '@/components/features/SearchSection'
 
-async function getHomeProgress() {
+async function getHomeProgress(userId: string | null) {
   try {
     const supabase = await createClient()
-    if (!supabase) {
-      return {
-        completedCount: 0,
-        responsesCompletedCount: 0,
-        streak: 0,
-        sphereCompleted: SPHERES.map(() => 0),
-        badgesEarned: 0,
-        fullBadgesEarned: 0,
-      }
-    }
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
+    if (!supabase || !userId) {
       return {
         completedCount: 0,
         responsesCompletedCount: 0,
@@ -29,10 +18,10 @@ async function getHomeProgress() {
       }
     }
     const [completedCount, responsesCompletedCount, streak, sphereProgress] = await Promise.all([
-      getCompletedCount(supabase, user.id),
-      getResponsesCompletedCount(supabase, user.id),
-      getStreak(supabase, user.id),
-      Promise.all(SPHERES.map((s) => getSphereProgress(supabase, user.id, s.id))),
+      getCompletedCount(supabase, userId),
+      getResponsesCompletedCount(supabase, userId),
+      getStreak(supabase, userId),
+      Promise.all(SPHERES.map((s) => getSphereProgress(supabase, userId, s.id))),
     ])
     const sphereCompleted = sphereProgress.map((p) => p.completed)
     const badgesEarned = ACHIEVEMENT_BADGES.filter((b) => completedCount >= b.threshold).length
@@ -82,7 +71,7 @@ export default async function HomePage() {
   const isLoggedIn = !!user
 
   const { completedCount, responsesCompletedCount, streak, sphereCompleted, badgesEarned, fullBadgesEarned } =
-    await getHomeProgress()
+    await getHomeProgress(user?.id ?? null)
   const overallPct = Math.round((completedCount / TOTAL_DEVOTIONS) * 100)
   const isBadgeEarned = (threshold: number) => completedCount >= threshold
   const isFullBadgeEarned = (threshold: number) => responsesCompletedCount >= threshold
