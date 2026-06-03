@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useState, Suspense, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
@@ -25,6 +25,16 @@ function LoginForm() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({ resolver: zodResolver(schema) })
+
+  useEffect(() => {
+    const supabase = createClient()
+    if (!supabase) return
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        router.replace(redirectTo.startsWith('/') ? redirectTo : '/dashboard')
+      }
+    })
+  }, [router, redirectTo])
 
   async function onSubmit(data: FormData) {
     setError(null)
