@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 const navLinks = [
+  { href: '/search', label: 'Search' },
   { href: '/about', label: 'About the Spheres' },
   { href: '/#spheres', label: 'Explore' },
   { href: '/dashboard', label: 'Progress' },

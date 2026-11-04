@@ -47,11 +47,7 @@ function useDebounce<T>(fn: (v: T) => void, ms: number) {
   )
 }
 
-interface SearchSectionProps {
-  isLoggedIn: boolean
-}
-
-export function SearchSection({ isLoggedIn }: SearchSectionProps) {
+export function SearchSection({ placement = 'home' }: { placement?: 'home' | 'page' | 'inset' }) {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchResult[]>([])
   const [loading, setLoading] = useState(false)
@@ -71,7 +67,6 @@ export function SearchSection({ isLoggedIn }: SearchSectionProps) {
       setApiError(null)
       return
     }
-    if (!isLoggedIn) return
     setLoading(true)
     setSearched(true)
     setExpanded(false)
@@ -94,7 +89,7 @@ export function SearchSection({ isLoggedIn }: SearchSectionProps) {
     } finally {
       setLoading(false)
     }
-  }, [isLoggedIn])
+  }, [])
 
   const debouncedSearch = useDebounce(doSearch, 300)
 
@@ -106,16 +101,18 @@ export function SearchSection({ isLoggedIn }: SearchSectionProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!isLoggedIn) return
     doSearch(query)
   }
 
-  const handleFocus = () => {
-    if (!isLoggedIn) setSearched(true)
-  }
+  const sectionClass =
+    placement === 'page'
+      ? 'relative z-10 mx-auto max-w-[900px] px-6 pb-16 pt-28 sm:px-8'
+      : placement === 'inset'
+        ? 'relative z-10 mb-10'
+        : 'relative z-10 mx-auto mb-16 -mt-12 max-w-[1400px] px-6 pb-12 sm:px-8'
 
   return (
-    <section className="relative z-10 mx-auto max-w-[1400px] -mt-12 px-6 pb-12 sm:px-8 mb-16" aria-labelledby="search-heading">
+    <section id="search" className={sectionClass} aria-labelledby="search-heading">
       <div className="rounded-2xl border border-white/20 bg-white/70 p-6 shadow-glass sm:p-8">
         <h2 id="search-heading" className="font-heading text-xl font-bold text-text-primary sm:text-2xl">
           Search by topic
@@ -130,14 +127,13 @@ export function SearchSection({ isLoggedIn }: SearchSectionProps) {
               type="search"
               value={query}
               onChange={handleChange}
-              onFocus={handleFocus}
               placeholder="e.g. God as father, marriage, justice"
               className="flex-1 rounded-xl border border-gray-300 bg-white px-4 py-3 text-text-primary placeholder:text-gray-400 focus:border-education focus:outline-none focus:ring-1 focus:ring-education"
               aria-label="Search key passages by topic"
             />
             <button
               type="submit"
-              disabled={loading || !isLoggedIn}
+              disabled={loading}
               className="rounded-xl border border-gray-300 bg-white px-6 py-3 font-semibold text-text-primary transition hover:bg-gray-50 disabled:opacity-50"
             >
               {loading ? 'Searching…' : 'Search'}
@@ -145,47 +141,16 @@ export function SearchSection({ isLoggedIn }: SearchSectionProps) {
           </div>
         </form>
 
-        {!isLoggedIn && (searched || query.trim()) && (
-          <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-800">
-            <p className="font-medium">Sign in to search</p>
-            <p className="mt-1 text-sm">Create an account or log in to search 416 key passages by topic.</p>
-            <div className="mt-4 flex gap-3">
-              <Link
-                href="/login"
-                className="rounded-xl bg-text-primary px-5 py-2.5 text-sm font-semibold text-cream transition hover:opacity-90"
-              >
-                Log in
-              </Link>
-              <Link
-                href="/signup"
-                className="rounded-xl border-2 border-text-primary px-5 py-2.5 text-sm font-semibold text-text-primary transition hover:bg-text-primary hover:text-cream"
-              >
-                Create account
-              </Link>
-            </div>
-          </div>
-        )}
-
-        {isLoggedIn && loading && (
+        {loading && (
           <p className="mt-6 text-center text-text-secondary">Searching key passages…</p>
         )}
 
-        {isLoggedIn && !loading && searched && (
+        {!loading && searched && (
           <div className="mt-6">
             {apiError ? (
               <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-800">
                 <p className="font-medium">Search unavailable</p>
                 <p className="mt-1 text-sm">{apiError}</p>
-                {apiError.includes('Sign in') && (
-                  <div className="mt-4 flex gap-3">
-                    <Link href="/login" className="rounded-xl bg-text-primary px-5 py-2.5 text-sm font-semibold text-cream transition hover:opacity-90">
-                      Log in
-                    </Link>
-                    <Link href="/signup" className="rounded-xl border-2 border-text-primary px-5 py-2.5 text-sm font-semibold text-text-primary transition hover:bg-text-primary hover:text-cream">
-                      Create account
-                    </Link>
-                  </div>
-                )}
               </div>
             ) : results.length === 0 ? (
               <p className="text-center text-text-secondary">

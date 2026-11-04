@@ -1,9 +1,5 @@
-import { redirect } from 'next/navigation'
+import { SearchSection } from '@/components/features/SearchSection'
 
-/**
- * Search is now on the home page above the tracking cards.
- * Redirect /search to home.
- */
 export default function SearchPage() {
-  redirect('/')
+  return <SearchSection placement="page" />
 }

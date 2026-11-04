@@ -61,11 +61,6 @@ export async function GET(request: Request) {
     )
   }
 
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return NextResponse.json({ error: 'Sign in to search' }, { status: 401 })
-  }
-
   try {
     const openai = new OpenAI({ apiKey: openaiKey })
     const embedResponse = await openai.embeddings.create({
